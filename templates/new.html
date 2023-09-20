@@ -1,0 +1,17 @@
+<p>Olet kirjautunut nimellä {{ session.username }}</p>
+<a href="/topics">Palaa</a>
+<span style="margin: 0 8px;">&nbsp;</span>
+<a href="/logout">Kirjaudu ulos</a>
+<hr>
+<form action="/send" method="POST">
+    Aihealue: <br>
+    <textarea name="tag" rows="1" cols="10"></textarea>
+    <br>
+    Otsikko: <br>
+    <textarea name="header" rows="1" cols="20"></textarea>
+    <br>
+    Viesti: <br>
+    <textarea name="content" rows="3" cols="40"></textarea>
+    <br>
+    <input type="submit" value="Julkaise">
+    </form>

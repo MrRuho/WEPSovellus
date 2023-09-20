@@ -1,0 +1,19 @@
+<a href="/topics">Palaa</a>
+<hr>
+<form action="/AddNewUser" method="POST">
+    <p>Käyttäjä nimi:<br>
+    <input type="text" name="username"></p>
+    <p>Etunimi:<br>
+    <input type="text" name="first_name"></p>
+    <p>Sukunimi:<br>
+    <input type="text" name="last_name"></p>
+    <p>Sähköposti:<br>
+    <input type="text" name="email"></p>
+    <p>Salasana:<br>
+    <input type="text" name="password"></p>
+    <input type="submit" value="Rekisteröidy">
+</form>
+
+{% if user_exists %}
+<p>Käyttäjänimi tai sähköposti on jo käytössä.</p>
+{% endif %}

@@ -1,0 +1,16 @@
+<p>Olet kirjautunut nimellä {{ session.username }}</p>
+<a href="/logout">Kirjaudu ulos</a>
+<hr>
+<div style="text-align: center;">
+    <h1>FORUM</h1>
+    <p>Puhe on vapaa</p>
+</div>
+<a href="/new">Aloita uusi keskustelu</a>
+{% for topic in topics %}
+<h4>{{ topic.tag }}</h4>
+<h1>{{ topic.header }}</h1>
+<p>{{ topic.sender }}</p>
+<p>Kommentit:{{ topic.message_count}}</p>
+<a href="/view_topic/{{ topic.id }}" class="btn btn-primary">Lue</a>
+<hr>
+{% endfor %}

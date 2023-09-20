@@ -1,0 +1,26 @@
+<p>Olet kirjautunut nimellä {{ session.username }}</p>
+<a href="/topics">Palaa</a>
+<span style="margin: 0 8px;">&nbsp;</span>
+<a href="/logout">Kirjaudu ulos</a>
+<hr>
+<div style="text-align: center;">
+    <h1>FORUM</h1>
+    <h2>Puhe on vapaa</h2>
+</div>
+<h1>{{ topic.header }}</h1>
+<p1>{{ topic.content }}</p1>
+<p>{{ topic.sender }}</p>
+<hr>
+<p>Kommentit</p>
+{% for comment in comments %}
+<p>{{ comment.sender }}: {{ comment.content }} </p>
+{% endfor %}
+<hr>
+
+<form action="/comment" method="POST">
+    <input type="hidden" name="topic_id" value="{{ topic.id }}">
+    Kommentoi: <br>
+    <textarea name="comment" rows="3" cols="40"></textarea>
+    <br>
+    <input type="submit" value="Lähetä">
+</form>
