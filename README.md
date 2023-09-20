@@ -1,6 +1,8 @@
 # WEPSovellus
 Tietokannat ja web ohjelmointi kurssi: Harjoitustyö
 
+- HUOM! itse sovellus löytyy master puusta.
+
 Keskustelusovellus.
 
 Perusidea.
@@ -12,3 +14,4 @@ Perusidea.
 - Käyttäjä voi laittaa keskustelulle kirjamerkin jolloin se näytetään listassa aina ensin.
 - Ylläpitäjä voi poistaa ja sulkea keskustelun
 - Ylläpitäjä voi poistaa käyttäjän tai blokata tilin määräajaksi jolloin käyttäjä voi ainoastaan lukea keskusteluja
+
