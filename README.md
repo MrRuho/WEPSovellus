@@ -16,33 +16,54 @@ Perusidea.
 - Ylläpitäjä voi poistaa käyttäjän tai blokata tilin määräajaksi jolloin käyttäjä voi ainoastaan lukea keskusteluja
 
 - -----------------------------------------
-20.9
+23.9
 Version 1.0
-Forumi sovellus
-Käyttäjän täytyy luoda itselleen tunnuksen jotta voi kirjauta sisälle sovellukseen.
-Käyttäjä luoda uutisen/aiheen johon merkitään tägi (aihe/gategoria), otsikko ja leipäteksti.
-Pääsivulla näkyvissä on jutun tägi otsikko ja tekijä, sekä se kuinka monta kommenttia kyseinen uutinen on saanut.
-Käyttäjä voi klikata auki mielenkiintoiset uutiset jolloin näkyviin tulee leipäteksti.
-Käyttäjä voi halutessaan kommentoida aihetta.
 
-Asennus ohjeet. Linux
+Toiminnassa
+- Käyttäjä voi luoda oman käyttäjä tunnuksen ja kirjautua sisään sekä ulos.
+- Jos käyttäjä nimi tai sähköposti on jo käytössä. Siitä tulee ilmoitus eikä tunnuksen luominen onnistu.
+- Käyttäjä voi kommentoida topiceja ja kirjoittaa omia.
+- Käyttäjä voi käyttää hakutoimintoa ja joka etsii topiceja aiheen, otsikon ja kirjoittajan mukaan.
+- Topicit järjestetään tuoreiden ja sen mukaan kuinka paljon niitä on kommentoitu, kuitenkin niin että uusin näytetään aina ensin.
+
+Tulossa
+- Käyttäjä voi poistaa oman profiilinsa
+- Käyttäjä voi poistaa omia viestejä ja topiceja sekä muokata niitä
+- Käyttäjä voi luoda topicin joka on salasanan takana
+- Admin käyttäjä joka voi poistaa topiceja ja viestejä
+- Admin käyttäjä voi blokata käyttäjän tai sulkea kokonaan pois palvelusta
+- Admin voi palauttaa käyttäjän oikeudet
+
+ Puutteita
+ - Tällä hetkellä missään mihin käyttäjä voi kirjoittaa ei ole mitään rajoituksia. Esim otsikko voi olla minkä pituinen vaan. Email voi olla minkä muotoinen vain. 
+ - Koodi on yhdessä app.py tiedostossa
+ - Ulkoasuun ei ole vielä kiinnitetty mitään huomiota
+
+HUOM!
+   Käyttäjän email osoite. Tämän oikeellisuutta ei tarkisteta millään tavalla, eikä sillä ole mitään oikeaa käyttöä. Ainoastaan profiilia luodessa ei sallita samaa email osoitetta.
+
+ASENNUS OHJEET. Linux
 1. Kloonaa tämä repositorio omalle koneellesi ja siirry sen juurikansioon. Luo kansioon .env-tiedosto ja määritä sen sisältö seuraavanlaiseksi:
-   DATABASE_URL= postgresql:///tietokannan nimi(yleensä käyttäjä nimi)
-   SECRET_KEY=<salainen-avain>
+   - DATABASE_URL= postgresql:///tietokannan nimi(yleensä käyttäjä nimi)
+   - SECRET_KEY=<salainen-avain>
 
 Jos testaat sovellusta Ubuntu on windows tai windows alijärjestelmä linuxille niin polku voi olla eri. (Minulla oli) postgresql://tietokannan nimi:1234SQL@localhost:5432/tietokannan nimi
    
-3. Aktivoi virtuaaliympäristö ja asenna tarvittavat kirjastot ja ohjelmat. (Tarkoittaa käytännössä kaikkia niitä mitä kurssin sivuilla on asennettu)
-  $ python3 -m venv venv
-  $ source venv/bin/activate
-  (venv) $ pip install flask
-  (venv) $ pip install flask-sqlalchemy
-  (venv) $ pip install psycopg2
-  (venv) $ pip install python-dotenv
-  $ pip install -r ./requirements.txt (HUOM! joidenkin kohdalla asennus ei välttämättä onnistu mutta ohjelma toimii siitä huolimatta. Sovellus on tehty windosin alijärjestelmä linuxsilla )
+2. Aktivoi virtuaaliympäristö ja asenna tarvittavat kirjastot ja ohjelmat. (Tarkoittaa käytännössä kaikkia niitä mitä kurssin sivuilla on asennettu)
+  - $ python3 -m venv venv
+  - $ source venv/bin/activate
+  - (venv) $ pip install flask
+  - (venv) $ pip install flask-sqlalchemy
+  - (venv) $ pip install psycopg2
+  - (venv) $ pip install python-dotenv
+  - $ pip install -r ./requirements.txt (HUOM! joidenkin kohdalla asennus ei välttämättä onnistu mutta ohjelma toimii siitä huolimatta. Sovellus on tehty windosin alijärjestelmä linuxsilla )
 
-4. Olettaen että myös PostgreSQL on asennettu niin luo sovelluksen tarvitsemat tieokantarakenteet.
-  $ psql < schema.sql
+3. Olettaen että myös PostgreSQL on asennettu. Luo sovelluksen tarvitsemat tieokantarakenteet.
+  - $ psql < schema.sql
+    
+4. Asennetaan pari SQL laajennusta.
+  - $ CREATE EXTENSION fuzzystrmatch;
+  - $ CREATE EXTENSION pg_trgm;
 
 5. Käynnistä sovellus.
-   $ flask run
+   - $ flask run
