@@ -80,15 +80,9 @@ def AddNewUser():
 def topic():
     query = request.args.get("query")
 
-    # To determine the level of search precision. 0 show all topics
     if query is None:
         query = ""
-
-    if  query:
-        similarity_threshold = 10
-    else:
-        similarity_threshold = 0
-
+   
     # Display the most popular topic at first, based on the highest number of points. if query not empty, searches for similarity in the header, sender, and tag.
     sql = """
     SELECT t.id, t.header, t.sender, t.tag, COUNT(m.id) AS message_count
@@ -97,22 +91,19 @@ def topic():
     WHERE (
         :query = ''
         OR (
-            LOWER(t.tag) LIKE LOWER(:query)
-            AND similarity(LOWER(t.tag), LOWER(:query)) * 100 >= :threshold
+            LOWER(t.tag) LIKE LOWER(:query)    
         )
         OR (
             LOWER(t.header) LIKE LOWER(:query)
-            AND similarity(LOWER(t.header), LOWER(:query)) * 100 >= :threshold
         )
         OR (
             LOWER(t.sender) LIKE LOWER(:query)
-            AND similarity(LOWER(t.sender), LOWER(:query)) * 100 >= :threshold
         )
     )
     GROUP BY t.id, t.header, t.sender, t.tag
     ORDER BY t.score DESC
     """
-    params = {"query": f"%{query}%", "threshold": similarity_threshold}
+    params = {"query": f"%{query}%"}
     result = db.session.execute(text(sql), params)
     topics = result.fetchall()
 
