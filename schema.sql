@@ -34,10 +34,10 @@ CREATE TABLE messages (
 
 INSERT INTO messages (content, sender, topic_id)
 VALUES
-  ('Slava Ukraini!', 'Tero', 1),
-  ('Slava Ukraini!', 'Tuhnu66', 1),
-  ('Slava Ukraini!', 'Summy', 1),
-  ('Slava Ukraini!', 'Tero', 1),
-  ('Slava Ukraini!', 'Joku_Vaa', 1),
-  ('Slava Ukraini!', 'Saarx88', 1),
-  ('Täytyypä testata =)', 'Saarx88',4);
+  ('Slava Ukraini!', 'Tero', 0),
+  ('Slava Ukraini!', 'Tuhnu66', 0),
+  ('Slava Ukraini!', 'Summy', 0),
+  ('Slava Ukraini!', 'Tero', 0),
+  ('Slava Ukraini!', 'Joku_Vaa', 0),
+  ('Slava Ukraini!', 'Saarx88', 0),
+  ('Täytyypä testata =)', 'Saarx88',3);
