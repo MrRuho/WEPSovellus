@@ -43,13 +43,15 @@ HUOM!
    Käyttäjän email osoite. Tämän oikeellisuutta ei tarkisteta millään tavalla, eikä sillä ole mitään oikeaa käyttöä. Ainoastaan profiilia luodessa ei sallita samaa email osoitetta.
 
 ASENNUS OHJEET. Linux
-1. Kloonaa tämä repositorio omalle koneellesi ja siirry sen juurikansioon. Luo kansioon .env-tiedosto ja määritä sen sisältö seuraavanlaiseksi:
+1. Kloonaa tämä repositorio omalle koneellesi.
+   git clone -b master https://github.com/MrRuho/WEPSovellus.git
+2. siirry sen juurikansioon. Luo kansioon .env-tiedosto ja määritä sen sisältö seuraavanlaiseksi:
    - DATABASE_URL= postgresql:///tietokannan nimi(yleensä käyttäjä nimi)
    - SECRET_KEY=<salainen-avain>
 
 Jos testaat sovellusta Ubuntu on windows tai windows alijärjestelmä linuxille niin polku voi olla eri. (Minulla oli) postgresql://tietokannan nimi:1234SQL@localhost:5432/tietokannan nimi
    
-2. Aktivoi virtuaaliympäristö ja asenna tarvittavat kirjastot ja ohjelmat. (Tarkoittaa käytännössä kaikkia niitä mitä kurssin sivuilla on asennettu)
+3. Aktivoi virtuaaliympäristö ja asenna tarvittavat kirjastot ja ohjelmat. (Tarkoittaa käytännössä kaikkia niitä mitä kurssin sivuilla on asennettu)
   - $ python3 -m venv venv
   - $ source venv/bin/activate
   - (venv) $ pip install flask
@@ -58,12 +60,13 @@ Jos testaat sovellusta Ubuntu on windows tai windows alijärjestelmä linuxille 
   - (venv) $ pip install python-dotenv
   - $ pip install -r ./requirements.txt (HUOM! joidenkin kohdalla asennus ei välttämättä onnistu mutta ohjelma toimii siitä huolimatta. Sovellus on tehty windosin alijärjestelmä linuxsilla )
 
-3. Olettaen että myös PostgreSQL on asennettu. Luo sovelluksen tarvitsemat tieokantarakenteet.
+4. Käynnistä tietokanta (jos ei jo ole) ja Luo sovelluksen tarvitsemat tieokantarakenteet.
+  - $ start-pg.sh 
   - $ psql < schema.sql
-    
-4. Asennetaan pari SQL laajennusta.
-  - $ CREATE EXTENSION fuzzystrmatch;
-  - $ CREATE EXTENSION pg_trgm;
 
 5. Käynnistä sovellus.
    - $ flask run
+     
+TESTAUKSESTA ja MUITA HUOMIOITA
+schema.n mukana tulee valmiiksi täytettyjä tietokantoja testausta varten. Ei ehkä kaikkein suotavin tapa tehdä mutta tällä kierroksella näin. =)
+Kun luot tunnuksen ja kirjaudut sisään, niin aiheet näkyvät luonti järjestyksessä (bugi) mutta jos kommentoit tai kirjoitat oman viestin niin topicit järjestyvät niin kuin on tarkoitettu. Eli tuoreuden ja kommentoinnin mukaan. Uusimmat viestit eivät tarvitse niin paljoa kommentteja kuin vanhemmat viesti noustakseen kärkeen.
