@@ -1,16 +1,55 @@
-<p>Olet kirjautunut nimellä {{ session.username }}</p>
-<a href="/logout">Kirjaudu ulos</a>
-<hr>
-<div style="text-align: center;">
-    <h1>FORUM</h1>
-    <p>Puhe on vapaa</p>
-</div>
-<a href="/new">Aloita uusi keskustelu</a>
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .navbar {
+            position: sticky;
+            top: 0;
+            background-color: #ffffff;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+  <div class="navbar">
+    <p>Olet kirjautunut nimellä {{ session.username }}</p>
+    <a href="/logout">Kirjaudu ulos</a>
+    <hr>
+    <div style="text-align: center;">
+        <h1>FORUM</h1>
+        <p>Puhe on vapaa</p>
+    </div>
+    <div class="navbar-buttons">
+        <form action="/topics" method="GET" style="display: inline-block;">
+            Hakusana: <input type="text" name="query" value="{{ query }}">
+            <input type="submit" value="Hae">
+        </form>
+    </div>
+    <div>
+      <p>
+        <a href="/new_topic" style="margin-top: 20px; font-weight: bold;">Aloita uusi keskustelu</a>
+      </p>
+    </div>
+  </div>
+{% if latest_topic %}
+    <h4>{{ latest_topic.tag }}</h4>
+    <h1>{{ latest_topic.header }}</h1>
+    <p>{{ latest_topic.sender }}</p>
+    <a href="/view_topic/{{ latest_topic.id }}" class="btn btn-primary">Lue</a>
+    <hr>
+{% endif %}
+
 {% for topic in topics %}
-<h4>{{ topic.tag }}</h4>
-<h1>{{ topic.header }}</h1>
-<p>{{ topic.sender }}</p>
-<p>Kommentit:{{ topic.message_count}}</p>
-<a href="/view_topic/{{ topic.id }}" class="btn btn-primary">Lue</a>
-<hr>
+  {% if topic.id != latest_topic.id %}
+    <h4>{{ topic.tag }}</h4>
+    <h1>{{ topic.header }}</h1>
+    <p>{{ topic.sender }}</p>
+    <p>Kommentit:{{ topic.message_count }}</p>
+    <a href="/view_topic/{{ topic.id }}" class="btn btn-primary">Lue</a>
+    <hr>
+  {% endif %}
 {% endfor %}
+</body>
+</html>
