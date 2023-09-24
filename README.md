@@ -16,8 +16,8 @@ Perusidea.
 - Ylläpitäjä voi poistaa käyttäjän tai blokata tilin määräajaksi jolloin käyttäjä voi ainoastaan lukea keskusteluja
 
 - -----------------------------------------
-23.9
-Version 1.0
+24.9
+Version 1.01
 
 Toiminnassa
 - Käyttäjä voi luoda oman käyttäjä tunnuksen ja kirjautua sisään sekä ulos.
@@ -36,7 +36,7 @@ Tulossa
 
  Puutteita
  - Tällä hetkellä missään mihin käyttäjä voi kirjoittaa ei ole mitään rajoituksia. Esim otsikko voi olla minkä pituinen vaan. Email voi olla minkä muotoinen vain. 
- - Koodi on yhdessä app.py tiedostossa
+ - Koodin jäsentelyssä on vielä korjaamisen varaa. Prosessi käynnissä....
  - Ulkoasuun ei ole vielä kiinnitetty mitään huomiota
 
 HUOM!
@@ -69,4 +69,4 @@ Jos testaat sovellusta Ubuntu on windows tai windows alijärjestelmä linuxille 
      
 TESTAUKSESTA ja MUITA HUOMIOITA
 schema.n mukana tulee valmiiksi täytettyjä tietokantoja testausta varten. Ei ehkä kaikkein suotavin tapa tehdä mutta tällä kierroksella näin. =)
-Kun luot tunnuksen ja kirjaudut sisään, niin aiheet näkyvät luonti järjestyksessä (bugi) mutta jos kommentoit tai kirjoitat oman viestin niin topicit järjestyvät niin kuin on tarkoitettu. Eli tuoreuden ja kommentoinnin mukaan. Uusimmat viestit eivät tarvitse niin paljoa kommentteja kuin vanhemmat viesti noustakseen kärkeen.
+Kun luot tunnuksen ja kirjaudut sisään, niin aiheet näkyvät luonti järjestyksessä eli tuoreuden ja kommentoinnin mukaan kuitenkin niin että uusin on aina ensin. Uusimmat viestit eivät tarvitse niin paljoa kommentteja kuin vanhemmat viesti noustakseen kärkeen. Pisteytys toimii niin että uusin viesti saa 100 seuraavat 98,94,88,80 jne eli seuraava menettää aina 2 pistettä edellistä enemmän. Jokainen kommentti taas antaa 10 pistettä. 
