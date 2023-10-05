@@ -1,27 +1,61 @@
-<p>Olet kirjautunut nimellä {{ session.username }}</p>
-<a href="/topics">Palaa</a>
-<span style="margin: 0 8px;">&nbsp;</span>
-<a href="/logout">Kirjaudu ulos</a>
-<hr>
-<div style="text-align: center;">
-    <h1>FORUM</h1>
-    <p>Puhe on vapaa</p>
-</div>
-<h1>{{ topic.header }}</h1>
-<p1>{{ topic.content }}</p1>
-<p>{{ topic.sender }}</p>
-<hr>
-<p>Kommentit</p>
-{% for comment in comments %}
-<p>{{ comment.sender }}: {{ comment.content }} </p>
-{% endfor %}
-<hr>
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/styles.css">
+</head>
+    <body>
 
-<form action="/comment" method="POST">
-    <input type="hidden" name="topic_id" value="{{ topic.id }}">
-    Kommentoi: <br>
-    <textarea name="comment" rows="3" cols="40"></textarea>
-    <br>
-    <input type="submit" value="Lähetä">
-</form>
-<a href="/topics">Palaa</a>
+        <p>Olet kirjautunut nimellä {{ session.username }}</p>
+        <a href="/topics">Palaa</a>
+        <span style="margin: 0 8px;">&nbsp;</span>
+        <a href="/logout">Kirjaudu ulos</a>
+        <hr>
+
+        <div style="text-align: center;">
+            <h1>FORUM</h1>
+            <p>Puhe on vapaa</p>
+        </div>         
+        <h1>{{ topic.header }}</h1>
+        <p1>{{ topic.content }}</p1>
+        <p>{{ topic.sender }}</p>
+        <hr>
+
+        {% if topic.sender == session.username %}
+        <form id="delete-form" action="/hide_topic/{{ topic.id }}" method="POST" style="display: inline;">
+            <input type="submit" value="Poista" onclick="return confirm('Haluatko varmasti poistaa viestin?');">
+        </form>
+        <form id="edit-form" action="/edit_topic/{{ topic.id }}" method="POST" style="display: inline;">
+            <input type="submit" value="Muokkaa">
+        </form>
+        {% endif %}
+
+        <p>Kommentit</p>
+        {% for comment in comments %}
+            {% if comment.visible %}
+                <p>{{ comment.sender }}: {{ comment.content }} </p>
+                {% if comment.sender == session.username %}
+                    <form id="delete-form" action="/delete_comment/{{ comment.id }}" method="POST" style="display: inline;">
+                        <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                        <input type="submit" value="Poista" onclick="return confirm('Haluatko varmasti poistaa viestin?');">
+                    </form>
+                    <form id="edit-form" action="/edit_comment/{{ comment.id }}" method="POST" style="display: inline;">
+                        <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                        <input type="submit" value="Muokkaa">
+                    </form>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        <hr>
+
+        <form action="/comment" method="POST">
+            <input type="hidden" name="topic_id" value="{{ topic.id }}">
+            Kommentoi: <br>
+            <textarea name="comment" rows="3" cols="40"></textarea>
+            <br>
+            <input type="submit" value="Lähetä">
+        </form>
+        <a href="/topics">Palaa</a>
+        <hr>
+
+    </body>
+</html>

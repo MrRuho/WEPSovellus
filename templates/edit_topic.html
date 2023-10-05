@@ -1,0 +1,13 @@
+<form action="/update_topic" method="POST">
+    <input type="hidden" name="topic_id" value="{{ topic.id }}">
+    Aihealue: <br>
+    <textarea name="tag" rows="1" cols="10">{{ topic.tag }}</textarea>
+    <br>
+    Otsikko: <br>
+    <textarea name="header" rows="1" cols="20">{{ topic.header }}</textarea>
+    <br>
+    Viesti: <br>
+    <textarea name="content" rows="3" cols="40">{{ topic.content }}</textarea>
+    <br>
+    <input type="submit" value="Päivitä">
+</form>

@@ -1,0 +1,8 @@
+<form action="/update_comment" method="POST">
+    <input type="hidden" name="topic_id" value="{{ comment.topic_id }}">
+    <input type="hidden" name="comment_id" value="{{ comment.id }}">
+    Kommentoi: <br>
+    <textarea name="content" rows="3" cols="40">{{ comment.content }}</textarea>
+    <br>
+    <input type="submit" value="Muokkaa">
+</form>

@@ -1,17 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        .navbar {
-            position: sticky;
-            top: 0;
-            background-color: #ffffff;
-            padding: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            z-index: 100;
-        }
-    </style>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
 </head>
+
 <body>
   <div class="navbar">
     <p>Olet kirjautunut nimellä {{ session.username }}</p>
@@ -33,16 +25,17 @@
       </p>
     </div>
   </div>
-{% if latest_topic %}
+{% if latest_topic and latest_topic.visible%}
     <h4>{{ latest_topic.tag }}</h4>
     <h1>{{ latest_topic.header }}</h1>
     <p>{{ latest_topic.sender }}</p>
+    <p>Kommentit:{{ latest_topic.message_count }}</p>
     <a href="/view_topic/{{ latest_topic.id }}" class="btn btn-primary">Lue</a>
     <hr>
 {% endif %}
 
 {% for topic in topics %}
-  {% if topic.id != latest_topic.id %}
+  {% if topic.id != latest_topic.id and topic.visible%}
     <h4>{{ topic.tag }}</h4>
     <h1>{{ topic.header }}</h1>
     <p>{{ topic.sender }}</p>
