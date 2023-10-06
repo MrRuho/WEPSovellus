@@ -5,19 +5,30 @@
     </head>
 
     <body>
-        <p>Olet kirjautunut nimellä {{ session.username }}</p>
-        <a href="/topics">Palaa</a>
-        <span style="margin: 0 8px;">&nbsp;</span>
-        <a href="/logout">Kirjaudu ulos</a>
-        <hr>
-
-        <div style="text-align: center;">
-            <h1>FORUM</h1>
-            <p>Puhe on vapaa</p>
-        </div>         
-        <h1>{{ topic.header }}</h1>
-        <p1>{{ topic.content }}</p1>
-        <p>{{ topic.sender }}</p>
+        <div class="navbar">
+            <div style="text-align: right;">
+              <p>Olet kirjautunut nimellä {{ session.username }}</p>
+            </div>
+            <div class="navbar-links">
+              <a href="/my_interests">Seurattavat aiheet</a>
+              <a href="/profile">Oma profiili</a>
+              <a href="/logout">Kirjaudu ulos</a>
+            </div>
+            <div style="text-align: center;">
+                <h1>FORUM</h1>
+                <p>Puhe on vapaa</p>
+            </div>
+            <div class="back-link">
+            <a href="/topics">Palaa</a>
+            </div>
+        </div>
+        <div class="topic-header">
+            <h1>{{ topic.header }}</h1>
+        </div>
+        <div class="topic-content">
+            <p1>{{ topic.content }}</p1>
+            <p>{{ topic.sender }}</p>
+        </div>
         {% if topic.sender == session.username %}
             <form id="delete-form" action="/hide_topic/{{ topic.id }}" method="POST" style="display: inline;">
                 <input type="submit" value="Poista" class="custom-button" onclick="return confirm('Haluatko varmasti poistaa viestin?');">
@@ -28,33 +39,40 @@
         {% endif %}
         <hr>
 
-        <h3>Kommentit</h3>
+        <h4>Kommentit</h4>
         {% for comment in comments %}
             {% if comment.visible %}
-                <p>{{ comment.sender }}: {{ comment.content }}
-                    {% if comment.sender == session.username %}
-                        <form id="delete-form" action="/delete_comment/{{ comment.id }}" method="POST" style="display: inline;">
-                            <input type="hidden" name="comment_id" value="{{ comment.id }}">
-                            <input type="submit" value="Poista" class="custom-button" onclick="return confirm('Haluatko varmasti poistaa viestin?');">
-                        </form>
-                        <form id="edit-form" action="/edit_comment/{{ comment.id }}" method="POST" style="display: inline;">
-                            <input type="hidden" name="comment_id" value="{{ comment.id }}">
-                            <input type="submit" value="Muokkaa" class="custom-button"> 
-                        </form>
-                    {% endif %}
-                </p>
+                <div class="comment-container">
+                    <div class="comment-bubble">
+                        <p class="comment-sender">{{ comment.sender }}:</p>
+                        <p>{{ comment.content }}</p>
+                        {% if comment.sender == session.username %}
+                            <form id="delete-form" action="/delete_comment/{{ comment.id }}" method="POST" style="display: inline;">
+                                <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                                <input type="submit" value="Poista" class="custom-button" onclick="return confirm('Haluatko varmasti poistaa viestin?');">
+                            </form>
+                            <form id="edit-form" action="/edit_comment/{{ comment.id }}" method="POST" style="display: inline;">
+                                <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                                <input type="submit" value="Muokkaa" class="custom-button"> 
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
             {% endif %}
         {% endfor %}
-        <hr>
 
-        <form action="/comment" method="POST">
-            <input type="hidden" name="topic_id" value="{{ topic.id }}">
-            Kommentoi: <br>
-            <textarea name="comment" rows="3" cols="40"></textarea>
+        <div class="comment-box">
+            <form action="/comment" method="POST">
+                <input type="hidden" name="topic_id" value="{{ topic.id }}">                
+                Kommentoi: <br>
+                <textarea name="comment" rows="3" cols="40"></textarea>
+                <br>
+                <input type="submit" value="Lähetä">     
+            </form>
             <br>
-            <input type="submit" value="Lähetä">
-        </form>
-        <a href="/topics">Palaa</a>
-        <hr>
+            <div class="back-link">
+                <a href="/topics">Palaa</a>
+            </div>
+        </div>     
     </body>
 </html>

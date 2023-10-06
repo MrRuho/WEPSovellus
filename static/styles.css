@@ -6,6 +6,7 @@
     height: 100vh;
 }
 
+
 .navbar {
     position: sticky;
     top: 0;
@@ -15,27 +16,33 @@
     z-index: 100;
 }
 
-.navbar-right {
-    text-align: right;
-    margin-right: 20px; /* Lisää tarvittaessa enemmän tilaa */
-}
-
-.navbar-right h3 {
-    font-size: 18px;
-}
-
-.navbar-right ul {
-    list-style: none;
-    padding: 0;
-}
-
-.navbar-right ul li {
-    margin-bottom: 5px;
-    font-size: 14px;
-}
-
 .navbar-buttons a {
     margin-right: 10px;
+}
+
+.navbar-links {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 100%;
+}
+
+.navbar-links a {
+    margin-right: 10px;
+    text-decoration: none;
+    color: #498ff7;
+    position: relative;
+}
+
+.navbar-links a::after {
+    content: "|";
+    margin-left: 10px;
+    color: #498ff7;
+}
+
+.navbar-links a:last-child::after {
+    content: "";
+    margin-left: 0;
 }
 
 a.custom-button,
@@ -54,3 +61,60 @@ input[type="submit"].custom-button:hover {
     background-color: transparent;
     color: #000;
 }
+
+a.back-link {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    text-decoration: none;
+    color: #498ff7;
+}
+
+.comment-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 0px;
+    max-width: 60%;
+}
+
+.comment-bubble {
+    background-color: #e0f1fa;
+    border-radius: 15px;
+    padding: 10px;
+    margin-bottom: 10px;
+    word-wrap: break-word;
+}
+
+.comment-sender {
+    font-weight: bold;
+}
+
+.comment-box {
+    position: sticky;
+    bottom: 0;
+    background-color: #ffffff;
+    padding: 10px;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+}
+
+.comment-box textarea {
+    border-radius: 10px;
+    padding: 5px;
+    border: 1px solid #ccc;
+}
+
+.topic-header {
+    text-align: center;
+    padding: 10px;
+    margin-bottom: -30px;
+}
+
+.topic-content {
+    text-align: justify;
+    padding: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 800px;
+}
+
