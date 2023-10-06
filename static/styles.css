@@ -14,3 +14,43 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     z-index: 100;
 }
+
+.navbar-right {
+    text-align: right;
+    margin-right: 20px; /* Lisää tarvittaessa enemmän tilaa */
+}
+
+.navbar-right h3 {
+    font-size: 18px;
+}
+
+.navbar-right ul {
+    list-style: none;
+    padding: 0;
+}
+
+.navbar-right ul li {
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.navbar-buttons a {
+    margin-right: 10px;
+}
+
+a.custom-button,
+input[type="submit"].custom-button {
+    background-color: transparent;
+    padding: 1px 1px;
+    border: none;
+    margin: 0;
+    border-radius: 0;
+    text-decoration: none;
+    color: #498ff7;
+}
+
+a.custom-button:hover,
+input[type="submit"].custom-button:hover {
+    background-color: transparent;
+    color: #000;
+}
