@@ -5,8 +5,8 @@ db = SQLAlchemy()
 
 # Display the most popular topic at first, based on the highest number of points. 
 # if query not empty, searches for similarity in the header, sender, and tag.
-def show_topics(query):
-    
+def show_topics(query,show_interests,username):
+
     sql = """
     SELECT t.id, t.header, t.sender, t.tag, 
            SUM(CASE WHEN m.visible THEN 1 ELSE 0 END) AS message_count, t.visible
@@ -24,10 +24,32 @@ def show_topics(query):
             LOWER(t.sender) LIKE LOWER(:query)
         )
     )
-    GROUP BY t.id, t.header, t.sender, t.tag, t.visible
-    ORDER BY t.score DESC
     """
     params = {"query": f"%{query}%"}
+
+    # If show_interests is "true",show only topics that user follows.
+    if show_interests == "true":
+
+        sql += """
+            AND (
+                t.tag IN (
+                    SELECT subject
+                    FROM tags
+                    WHERE id = ANY (
+                        SELECT unnest(interests)
+                        FROM users
+                        WHERE username = :username
+                    )
+                )
+            )
+        """
+        params["username"] = username
+
+    sql += """
+        GROUP BY t.id, t.header, t.sender, t.tag, t.visible
+        ORDER BY t.score DESC
+    """
+
     result = db.session.execute(text(sql), params)
     topics = result.fetchall()
 
@@ -73,6 +95,23 @@ def publish_topic(header, content, sender, tag):
     sql = text("INSERT INTO topic (header, content, sender, tag, visible) VALUES (:header, :content, :sender, :tag, true)")
     db.session.execute(sql, {"header": header, "content": content, "sender": sender, "tag": tag})
     db.session.commit()
+
+# Save new tag to tag table. If tag is already exist add tag total value +1
+def add_topic_to_tag_table(tag):
+    try:
+        sql = text("SELECT COUNT(*) FROM tags WHERE subject LIKE :tag")
+        subjectExists = db.session.execute(sql, {"tag":tag}).scalar()
+
+        if subjectExists > 0:
+            sql = text("UPDATE tags SET total = total + 1 WHERE subject = :tag")
+        else:
+            sql = text("INSERT INTO tags(subject, total) VALUES(:tag,1)")
+
+        db.session.execute(sql,{"tag":tag})
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        raise e
 
 # These points determine which topic is shown first. The point count is based on how new the topic is and how much it has been commented on.
 # The newest topic gets 100 points, the second 98, the third 94, and so on. Additionally, every comment linked to that topic gives it +10 points.
@@ -129,6 +168,7 @@ def update_topic(topic_id,header,content,tag):
     db.session.execute(sql, {"header": header, "content": content, "tag": tag, "topic_id": topic_id})
     db.session.commit()
 
+# Set comment visible to fals
 def hide_comment(comment_id): 
     sql = text("UPDATE messages SET visible = false WHERE id = :comment_id")
     db.session.execute(sql, {"comment_id": comment_id})
@@ -145,4 +185,31 @@ def get_topic_id_from_comment_id(comment_id):
     topic_id = result.fetchone()[0]
 
     return topic_id
+
+# add tag to user interests
+def add_tag_to_interests(username, tag):
+    sql = text("SELECT id FROM tags WHERE subject = :tag")
+    result = db.session.execute(sql, {"tag": tag})
+    subject_id = result.scalar()
+
+    sql = text("SELECT interests @> ARRAY[:subject_id] FROM users WHERE username = :username")
+    interest_exist = db.session.execute(sql, {"username": username, "subject_id": subject_id}).scalar()
+
+    if not interest_exist:
+        sql = text("UPDATE users SET interests = interests || ARRAY[:subject_id] WHERE username = :username")
+        db.session.execute(sql, {"username": username, "subject_id": subject_id})
+        db.session.commit()
+
+
+def my_interest_list(username):
+
+    sql = text("""
+        SELECT tags.subject
+        FROM users
+        JOIN tags ON tags.id = ANY(users.interests)
+        WHERE users.username = :username
+    """)
+    result = db.session.execute(sql, {"username": username})
+    interest_tags = [row.subject for row in result]
+    return interest_tags
  

@@ -1,7 +1,7 @@
 from flask import redirect, render_template, request, session
 from app import app
 from sqlalchemy.sql import text
-from sql import update_topic_scores,publish_topic,selected_topic,topic_comments,show_topics,latest_topic,new_user,add_comment,hide_topic, update_topic,hide_comment,get_topic_id_from_comment_id,selected_comment,update_comment,db
+from sql import update_topic_scores,publish_topic,selected_topic,topic_comments,show_topics,latest_topic,new_user,add_comment,hide_topic, update_topic,hide_comment,get_topic_id_from_comment_id,selected_comment,update_comment,add_topic_to_tag_table,add_tag_to_interests,my_interest_list,db
 from werkzeug.security import check_password_hash, generate_password_hash
 
 @app.route("/")
@@ -26,10 +26,11 @@ def login():
         if check_password_hash(hash_value, password):
             session["username"] = username
             query = ""
-            topics = show_topics(query)
+            show_interests = "false"
+            topics = show_topics(query,show_interests,username)
             latest = latest_topic()
-
-            return render_template("/topics.html", topics=topics, latest_topic=latest)
+            my_interest = my_interest_list(username)
+            return render_template("/topics.html", topics=topics, latest_topic=latest,show_interests=show_interests, my_interest = my_interest)
         else:
             return render_template("index.html", not_password=True)
 
@@ -57,14 +58,27 @@ def AddNewUser():
 # Show all topics
 @app.route("/topics", methods=["GET"])
 def topic():
+    username = session["username"]
     query = request.args.get("query")
     if query is None:
         query = ""
 
-    topics = show_topics(query) 
-    latest = latest_topic()
+    show_interests = request.args.get("show_interests")
+    if show_interests is None:
+        show_interests = "false"
 
-    return render_template("/topics.html", topics=topics, query=query, latest_topic=latest)
+    if show_interests == "true":
+        show_interests_text = "Näytä kaikki"
+        toggle_show_interests = "false"
+    else:
+        show_interests_text = "Näytä seurattavat"
+        toggle_show_interests = "true"
+
+    topics = show_topics(query,show_interests,username) 
+    latest = latest_topic()
+    my_interest = my_interest_list(username)
+
+    return render_template("topics.html",topics=topics, latest_topic=latest, query=query, show_interests=show_interests, show_interests_text=show_interests_text, toggle_show_interests=toggle_show_interests, my_interest=my_interest)
 
 # New topic template
 @app.route("/new_topic")
@@ -77,10 +91,11 @@ def send():
     header = request.form["header"]
     content = request.form["content"]
     sender = session["username"]
-    tag = request.form["tag"]
+    tag = request.form["tag"].lower()
 
     publish_topic(header, content, sender, tag)
     update_topic_scores()
+    add_topic_to_tag_table(tag)
 
     return redirect("/topics")
 
@@ -161,7 +176,6 @@ def modify_comment():
 
     return render_template("view_topic.html", topic=topic, comments=comments)
 
-
 # Add new comment
 @app.route("/comment", methods=["POST"])
 def comment():
@@ -172,6 +186,16 @@ def comment():
     add_comment(content,sender,topic_id)
 
     return redirect(f"/view_topic/{topic_id}")
+
+@app.route('/follow_tag/<string:tag>', methods=['GET'])
+def follow_tag(tag):
+
+    username = session['username']
+    
+    add_tag_to_interests(username, tag)
+        
+    return redirect("/topics")
+
 
 @app.route("/logout")
 def logout():

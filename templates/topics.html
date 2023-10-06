@@ -13,8 +13,11 @@
         <h1>FORUM</h1>
         <p>Puhe on vapaa</p>
     </div>
+    <div>
+      <a href="/topics?show_interests={{ toggle_show_interests }}">{{ show_interests_text }}</a>
+    </div>
     <div class="navbar-buttons">
-        <form action="/topics" method="GET" style="display: inline-block;">
+        <form action="/topics" method="GET" style="display: inline-block; margin-top: 20px;">
             Hakusana: <input type="text" name="query" value="{{ query }}">
             <input type="submit" value="Hae">
         </form>
@@ -24,9 +27,17 @@
         <a href="/new_topic" style="margin-top: 20px; font-weight: bold;">Aloita uusi keskustelu</a>
       </p>
     </div>
+    <div class="navbar-right">
+      <h3>Omat mielenkiinnon kohteet:</h3>
+      <ul>
+          {% for tag in my_interest %}
+              <li>{{ tag }}</li>
+          {% endfor %}
+      </ul>
+    </div>
   </div>
 {% if latest_topic and latest_topic.visible%}
-    <h4>{{ latest_topic.tag }}</h4>
+    <h4><a href="/follow_tag/{{ latest_topic.tag }}">{{ latest_topic.tag }}</a></h4>
     <h1>{{ latest_topic.header }}</h1>
     <p>{{ latest_topic.sender }}</p>
     <p>Kommentit:{{ latest_topic.message_count }}</p>
@@ -36,7 +47,7 @@
 
 {% for topic in topics %}
   {% if topic.id != latest_topic.id and topic.visible%}
-    <h4>{{ topic.tag }}</h4>
+    <h4><a href="/follow_tag/{{ topic.tag }}">{{ topic.tag }}</a></h4>
     <h1>{{ topic.header }}</h1>
     <p>{{ topic.sender }}</p>
     <p>Kommentit:{{ topic.message_count }}</p>
