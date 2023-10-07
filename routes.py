@@ -1,7 +1,7 @@
 from flask import redirect, render_template, request, session
 from app import app
 from sqlalchemy.sql import text
-from sql import update_topic_scores,publish_topic,selected_topic,topic_comments,show_topics,latest_topic,new_user,add_comment,hide_topic, update_topic,hide_comment,get_topic_id_from_comment_id,selected_comment,update_comment,add_topic_to_tag_table,add_tag_to_interests,my_interest_list,db
+from sql import update_topic_scores,publish_topic,selected_topic,topic_comments,show_topics,latest_topic,new_user,add_comment,hide_topic, update_topic,hide_comment,get_topic_id_from_comment_id,selected_comment,update_comment,add_topic_to_tag_table,add_tag_to_interests,my_interest_list,show_top_20_subjects,remove_tag_from_interests,show_tags,db
 from werkzeug.security import check_password_hash, generate_password_hash
 
 @app.route("/")
@@ -27,10 +27,11 @@ def login():
             session["username"] = username
             query = ""
             show_interests = "false"
+            show_interests_text = "Näytä seurattavat"
             topics = show_topics(query,show_interests,username)
             latest = latest_topic(username,show_interests)
-            my_interest = my_interest_list(username)
-            return render_template("/topics.html", topics=topics, latest_topic=latest,show_interests=show_interests, my_interest = my_interest)
+           
+            return render_template("/topics.html", topics=topics, latest_topic=latest,show_interests=show_interests,show_interests_text=show_interests_text)
         else:
             return render_template("index.html", not_password=True)
 
@@ -76,9 +77,8 @@ def topic():
 
     topics = show_topics(query,show_interests,username)
     latest = latest_topic(username,show_interests)
-    my_interest = my_interest_list(username)
 
-    return render_template("topics.html",topics=topics, latest_topic=latest, query=query, show_interests=show_interests, show_interests_text=show_interests_text, toggle_show_interests=toggle_show_interests, my_interest=my_interest)
+    return render_template("topics.html",topics=topics, latest_topic=latest, query=query, show_interests=show_interests, show_interests_text=show_interests_text, toggle_show_interests=toggle_show_interests)
 
 # New topic template
 @app.route("/new_topic")
@@ -197,7 +197,39 @@ def follow_tag(tag):
     
     add_tag_to_interests(username, tag)
         
-    return redirect("/topics")
+    from_page = request.args.get('from')
+    if from_page == 'interests':
+        return redirect("/my_interests")
+    elif from_page == 'topics':
+        return redirect("/topics")
+    else:
+        return redirect("/")
+
+
+@app.route('/remove_tag/<string:tag>', methods=['GET'])
+def remove_tag(tag):
+
+    username = session['username']
+    
+    remove_tag_from_interests(username, tag)
+        
+    return redirect("/my_interests")
+
+
+@app.route("/my_interests")
+def my_interest():
+    username = session["username"]
+
+    query = request.args.get("query")
+    if query is None:
+        query = ""
+
+    my_interest = my_interest_list(username)
+    top_20_subjects = show_top_20_subjects()
+    tags = show_tags(query)
+
+    return render_template("interests.html", my_interest = my_interest, top_20_subjects = top_20_subjects, tags= tags)
+
 
 
 @app.route("/logout")

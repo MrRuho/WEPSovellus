@@ -118,3 +118,28 @@ a.back-link {
     max-width: 800px;
 }
 
+.container {
+    display: flex;
+    justify-content: space-between;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.interests-list, .top20-list {
+    background-color: #e0f1fa;
+    border-radius: 15px;
+    padding: 10px;
+    margin-bottom: 10px;
+    word-wrap: break-word;
+    max-width: 200px;
+}
+
+.search-list {
+    background-color: #e0f1fa;
+    border-radius: 15px;
+    padding: 10px;
+    margin-bottom: 10px;
+    word-wrap: break-word;
+    max-width: 300px;
+}
+

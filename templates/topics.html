@@ -45,7 +45,7 @@
     {% endif %}
     {% for topic in topics %}
       {% if topic.id != latest_topic.id and topic.visible%}
-        <h4><a href="/follow_tag/{{ topic.tag }}">{{ topic.tag }}</a></h4>
+        <h4><a href="/follow_tag/{{ topic.tag }}?from=topics">{{ topic.tag }}</a></h4>
         <h1>{{ topic.header }}</h1>
         <p>{{ topic.sender }}</p>
         <p>Kommentit:{{ topic.message_count }}</p>

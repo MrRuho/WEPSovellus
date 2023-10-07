@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+
+  <body>
+    <div class="navbar">
+      <div style="text-align: right;">
+        <p>Olet kirjautunut nimellä {{ session.username }}</p>
+      </div>
+      <div class="navbar-links">
+        <a href="/topics">Palaa</a>
+        <a href="/profile">Oma profiili</a>
+        <a href="/logout">Kirjaudu ulos</a>
+      </div>
+    </div>
+    <div class="container">
+        <div class="interests-list">
+            <h2>Seuratut aiheet:</h2>
+            <ul>
+            {% for tag in my_interest %}
+                <li>
+                    <a href="/remove_tag/{{ tag }}">{{ tag }}</a>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+        <div class="top20-list">
+            <h2>Aiheet top 20:</h2>
+            <ul>
+                {% for tag in top_20_subjects %}
+                    <li>
+                        <a href="/follow_tag/{{ tag }}?from=interests">{{ tag }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="search-list">
+            <form action="/my_interests" method="GET" style="display: inline-block; margin-top: 20px;">
+                <input type="text" name="query" value="{{ query }}">
+                <input type="submit" value="Hae">
+            </form>
+            <ul>
+                {% for tag in tags %}
+                    <li>
+                        <a href="/follow_tag/{{ tag }}?from=interests">{{ tag }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+  </body>
+</html>

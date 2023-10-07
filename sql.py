@@ -90,6 +90,12 @@ def latest_topic(username, show_interests):
 
     return latest_topic
 
+def show_tags(query):
+    sql = text("SELECT subject FROM tags WHERE (:query = '' OR ( LOWER(subject) LIKE LOWER(:query) ) )")
+    params = {"query": f"%{query}%"}
+    result = db.session.execute(sql, params)
+    tags = [row[0] for row in result.fetchall()]
+    return tags
 
 def topic_comments(topic_id):
     comments_query = text("SELECT id, content, sender, visible FROM messages WHERE topic_id = :topic_id")
@@ -226,6 +232,14 @@ def add_tag_to_interests(username, tag):
         db.session.execute(sql, {"username": username, "subject_id": subject_id})
         db.session.commit()
 
+def remove_tag_from_interests(username, tag):
+    sql = text("SELECT id FROM tags WHERE subject = :tag")
+    result = db.session.execute(sql, {"tag": tag})
+    subject_id = result.scalar()
+
+    sql = text("UPDATE users SET interests = array_remove(interests, :subject_id) WHERE username = :username")
+    db.session.execute(sql, {"username": username, "subject_id": subject_id})
+    db.session.commit()
 
 def my_interest_list(username):
 
@@ -238,4 +252,10 @@ def my_interest_list(username):
     result = db.session.execute(sql, {"username": username})
     interest_tags = [row.subject for row in result]
     return interest_tags
+
+def show_top_20_subjects():
+    sql = text("SELECT subject FROM tags ORDER BY total DESC LIMIT 20")
+    result = db.session.execute(sql)
+    subjects = [row.subject for row in result]
+    return subjects
  
