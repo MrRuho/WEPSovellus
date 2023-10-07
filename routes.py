@@ -28,7 +28,7 @@ def login():
             query = ""
             show_interests = "false"
             topics = show_topics(query,show_interests,username)
-            latest = latest_topic()
+            latest = latest_topic(username,show_interests)
             my_interest = my_interest_list(username)
             return render_template("/topics.html", topics=topics, latest_topic=latest,show_interests=show_interests, my_interest = my_interest)
         else:
@@ -74,8 +74,8 @@ def topic():
         show_interests_text = "Näytä seurattavat"
         toggle_show_interests = "true"
 
-    topics = show_topics(query,show_interests,username) 
-    latest = latest_topic()
+    topics = show_topics(query,show_interests,username)
+    latest = latest_topic(username,show_interests)
     my_interest = my_interest_list(username)
 
     return render_template("topics.html",topics=topics, latest_topic=latest, query=query, show_interests=show_interests, show_interests_text=show_interests_text, toggle_show_interests=toggle_show_interests, my_interest=my_interest)
@@ -155,12 +155,14 @@ def delete_comment(comment_id):
 
     return render_template("view_topic.html", topic=topic, comments=comments)
 
+
 @app.route('/edit_comment/<int:comment_id>', methods=['POST'])
 def edit_comment(comment_id):
 
     comment = selected_comment(comment_id)
 
     return render_template("edit_comment.html", comment=comment)
+
 
 @app.route('/update_comment', methods=['POST'])
 def modify_comment():
@@ -186,6 +188,7 @@ def comment():
     add_comment(content,sender,topic_id)
 
     return redirect(f"/view_topic/{topic_id}")
+
 
 @app.route('/follow_tag/<string:tag>', methods=['GET'])
 def follow_tag(tag):

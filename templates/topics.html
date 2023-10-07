@@ -33,16 +33,16 @@
         </p>
       </div>
     </div>
-
-    {% if latest_topic and latest_topic.visible%}
-        <h4><a href="/follow_tag/{{ latest_topic.tag }}">{{ latest_topic.tag }}</a></h4>
-        <h1>{{ latest_topic.header }}</h1>
-        <p>{{ latest_topic.sender }}</p>
-        <p>Kommentit:{{ latest_topic.message_count }}</p>
-        <a href="/view_topic/{{ latest_topic.id }}" class="btn btn-primary">Lue</a>
-        <hr>
+    {% if query == "" %}
+      {% if latest_topic and latest_topic.visible%}
+          <h4><a href="/follow_tag/{{ latest_topic.tag }}">{{ latest_topic.tag }}</a></h4>
+          <h1>{{ latest_topic.header }}</h1>
+          <p>{{ latest_topic.sender }}</p>
+          <p>Kommentit:{{ latest_topic.message_count }}</p>
+          <a href="/view_topic/{{ latest_topic.id }}" class="btn btn-primary">Lue</a>
+          <hr>
+      {% endif %}
     {% endif %}
-
     {% for topic in topics %}
       {% if topic.id != latest_topic.id and topic.visible%}
         <h4><a href="/follow_tag/{{ topic.tag }}">{{ topic.tag }}</a></h4>

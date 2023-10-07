@@ -55,19 +55,41 @@ def show_topics(query,show_interests,username):
 
     return topics
 
-def latest_topic():
-    sql ="""
+
+def latest_topic(username, show_interests):
+    sql = """
     SELECT t.id, t.header, t.sender, t.tag, 
-       SUM(CASE WHEN m.visible THEN 1 ELSE 0 END) AS message_count, t.visible
+           SUM(CASE WHEN m.visible THEN 1 ELSE 0 END) AS message_count, t.visible
     FROM topic t
     LEFT JOIN messages m ON t.id = m.topic_id
     WHERE t.id = (SELECT MAX(id) FROM topic)
+    """
+    # If show_interests is "true",show only latest_topics if user follows that.
+    if show_interests == "true":
+        sql += """
+        AND (
+            t.tag IN (
+                SELECT subject
+                FROM tags
+                WHERE id = ANY (
+                    SELECT unnest(interests)
+                    FROM users
+                    WHERE username = :username
+                )
+            )
+        )
+        """
+
+    sql += """
     GROUP BY t.id, t.header, t.sender, t.tag, t.visible
     """
-    result = db.session.execute(text(sql))
+    params = {"username": username}
+
+    result = db.session.execute(text(sql), params)
     latest_topic = result.fetchone()
 
     return latest_topic
+
 
 def topic_comments(topic_id):
     comments_query = text("SELECT id, content, sender, visible FROM messages WHERE topic_id = :topic_id")
@@ -75,6 +97,7 @@ def topic_comments(topic_id):
     topic_comments = comments_result.fetchall()
 
     return topic_comments
+
 
 def selected_comment(comment_id):
     sql = text("SELECT id, content, sender, topic_id FROM messages WHERE id = :comment_id")
@@ -90,6 +113,7 @@ def selected_topic(topic_id):
     selected_topic = topic_result.fetchone()
 
     return selected_topic
+
 
 def publish_topic(header, content, sender, tag):
     sql = text("INSERT INTO topic (header, content, sender, tag, visible) VALUES (:header, :content, :sender, :tag, true)")
@@ -174,10 +198,12 @@ def hide_comment(comment_id):
     db.session.execute(sql, {"comment_id": comment_id})
     db.session.commit()
 
+
 def update_comment(comment_id, content):
     sql = text("UPDATE messages SET content = :content WHERE id = :comment_id")
     db.session.execute(sql, {"content": content, "comment_id": comment_id})
     db.session.commit()
+
 
 def get_topic_id_from_comment_id(comment_id):
     sql = text("SELECT topic_id FROM messages WHERE id = :comment_id")
