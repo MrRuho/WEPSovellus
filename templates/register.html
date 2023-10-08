@@ -2,18 +2,30 @@
 <hr>
 <form action="/AddNewUser" method="POST">
     <p>Käyttäjä nimi:<br>
-    <input type="text" name="username"></p>
+    <input type="text" name="username" maxlength="20"></p>
     <p>Etunimi:<br>
-    <input type="text" name="first_name"></p>
+    <input type="text" name="first_name"maxlength="20"></p>
     <p>Sukunimi:<br>
-    <input type="text" name="last_name"></p>
+    <input type="text" name="last_name" maxlength="20"></p>
     <p>Sähköposti:<br>
-    <input type="text" name="email"></p>
+    <input type="text" name="email" maxlength="20"></p>
     <p>Salasana:<br>
-    <input type="text" name="password"></p>
+    <input type="text" name="password" maxlength="20"></p>
     <input type="submit" value="Rekisteröidy">
 </form>
 
 {% if user_exists %}
 <p>Käyttäjänimi tai sähköposti on jo käytössä.</p>
+{% endif %}
+
+{% if invalid_username %}
+<p>Käyttäjänimen, etunimen ja sukunimen täytyy olla vähintään 3 merkkiä pitkä.</p>
+{% endif %}
+
+{% if invalid_email %}
+<p>Email osoitteessa täytyy olla @ merkki.</p>
+{% endif %}
+
+{% if invalid_password %}
+<p>Salasanan täytyy olla vähintään 5 merkkiä pitkä.</p>
 {% endif %}

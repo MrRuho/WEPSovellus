@@ -55,6 +55,15 @@ def AddNewUser():
     password = request.form["password"]
     hash_value = generate_password_hash(password)
 
+    if len(username) < 3 or len(first_name) < 3 or len(last_name) < 3:
+        return render_template("register.html", user_exists=False, invalid_username=True)
+
+    if "@" not in email:
+        return render_template("register.html", user_exists=False, invalid_email=True)
+
+    if len(password) < 5:
+        return render_template("register.html", user_exists=False, invalid_password=True)
+
     if new_user(username, first_name, last_name, email, hash_value ) == False:    
         return render_template("register.html", user_exists=True)
     else:
@@ -80,7 +89,7 @@ def topic():
         show_interests_text = "Näytä kaikki"
         toggle_show_interests = "false"
     else:
-        show_interests_text = "Näytä seurattavat"
+        show_interests_text = "Näytä vain seurattavat"
         toggle_show_interests = "true"
 
     topics = show_topics(query,show_interests,username)
@@ -221,6 +230,12 @@ def comment():
     add_comment(content,sender,topic_id)
 
     return redirect(f"/view_topic/{topic_id}")
+
+@app.route("/profile")
+def profile():
+
+    return render_template("my_profile.html")
+
 
 @app.route("/logout")
 def logout():

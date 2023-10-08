@@ -1,18 +1,49 @@
-<p>Olet kirjautunut nimellä {{ session.username }}</p>
-<a href="/topics">Palaa</a>
-<span style="margin: 0 8px;">&nbsp;</span>
-<a href="/logout">Kirjaudu ulos</a>
-<hr>
-<form action="/publish" method="POST">
-    Aihealue: <br>
-    <textarea name="tag" rows="1" cols="10"></textarea>
-    <br>
-    Otsikko: <br>
-    <textarea name="header" rows="1" cols="20"></textarea>
-    <br>
-    Viesti: <br>
-    <textarea name="content" rows="3" cols="40"></textarea>
-    <br>
-    <input type="submit" value="Julkaise">
-    </form>
-    <a href="/topics">Palaa</a>
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+
+  <body>
+    <div class="navbar">
+        <div>
+          <p class="username-text">Olet kirjautunut nimellä {{ session.username }}</p>
+        </div>
+        <div class="navbar-links">
+          <a href="/topics">Aiheet</a>
+          <a href="/profile">Oma profiili</a>
+          <a href="/logout">Kirjaudu ulos</a>
+        </div>
+        <div style="text-align: center;">
+            <h1>FORUM</h1>
+            <p>Puhe on vapaa</p>
+        </div>  
+    </div>
+    <div class="new-topic-container">
+        <form action="/publish" method="POST">
+        <div>
+            Aihealue: <br>
+            <textarea name="tag" rows="1" cols="15" maxlength="20"></textarea>
+        </div>
+        <br>
+        <div>
+            Otsikko: <br>
+            <textarea name="header" rows="1" cols="40"maxlength="40"></textarea>
+        </div>
+        <br>
+        <div>
+            Viesti: <br>
+            <textarea name="content" rows="10" cols="80"maxlength="5000"></textarea>
+        </div>
+        <br>
+        <div>
+            <input type="submit" value="Julkaise">
+        </div>
+        <br>
+        <div>
+            <a href="/topics">Palaa</a>
+        </div>
+        </form>
+    </div>
+  </body>
+</html>

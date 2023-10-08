@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+  
+  </head>
+
+  <body>
+    <div class="navbar">
+      <div>
+        <p class="username-text">Olet kirjautunut nimellä {{ session.username }}</p>
+      </div>
+      <div class="navbar-links">
+        <a href="/topics">Aiheet</a>
+        <a href="/profile">Oma profiili</a>
+        <a href="/logout">Kirjaudu ulos</a>
+      </div>
+    </div>
+    <div class="topic_container">
+    <p>WORK IN PROGRESS....</p>
+    </div>
+  </body>
+</html>
