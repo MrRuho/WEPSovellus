@@ -26,12 +26,16 @@ def login():
         if check_password_hash(hash_value, password):
             session["username"] = username
             query = ""
+            tag_query = ""
             show_interests = "false"
             show_interests_text = "Näytä seurattavat"
             topics = show_topics(query,show_interests,username)
             latest = latest_topic(username,show_interests)
+            my_interest = my_interest_list(username)
+            top_20_subjects = show_top_20_subjects()
+            tags = show_tags(tag_query)
            
-            return render_template("/topics.html", topics=topics, latest_topic=latest,show_interests=show_interests,show_interests_text=show_interests_text)
+            return render_template("/topics.html", topics=topics, latest_topic=latest,show_interests=show_interests,show_interests_text=show_interests_text,my_interest = my_interest, top_20_subjects = top_20_subjects, tags= tags)
         else:
             return render_template("index.html", not_password=True)
 
@@ -63,6 +67,10 @@ def topic():
     query = request.args.get("query")
     if query is None:
         query = ""
+    
+    tag_query = request.args.get("tag_query")
+    if tag_query is None:
+        tag_query = ""
 
     show_interests = request.args.get("show_interests")
     if show_interests is None:
@@ -78,7 +86,32 @@ def topic():
     topics = show_topics(query,show_interests,username)
     latest = latest_topic(username,show_interests)
 
-    return render_template("topics.html",topics=topics, latest_topic=latest, query=query, show_interests=show_interests, show_interests_text=show_interests_text, toggle_show_interests=toggle_show_interests)
+    my_interest = my_interest_list(username)
+    top_20_subjects = show_top_20_subjects()
+ 
+    tags = show_tags(tag_query)
+
+    return render_template("topics.html",topics=topics, latest_topic=latest, query=query, show_interests=show_interests, show_interests_text=show_interests_text, toggle_show_interests=toggle_show_interests,my_interest = my_interest, top_20_subjects = top_20_subjects, tags= tags)
+
+
+@app.route('/follow_tag/<string:tag>', methods=['GET'])
+def follow_tag(tag):
+
+    username = session['username']
+    
+    add_tag_to_interests(username, tag)
+        
+    return redirect("/topics")
+
+
+@app.route('/remove_tag/<string:tag>', methods=['GET'])
+def remove_tag(tag):
+
+    username = session['username']
+    
+    remove_tag_from_interests(username, tag)
+        
+    return redirect("/topics")
 
 # New topic template
 @app.route("/new_topic")
@@ -188,49 +221,6 @@ def comment():
     add_comment(content,sender,topic_id)
 
     return redirect(f"/view_topic/{topic_id}")
-
-
-@app.route('/follow_tag/<string:tag>', methods=['GET'])
-def follow_tag(tag):
-
-    username = session['username']
-    
-    add_tag_to_interests(username, tag)
-        
-    from_page = request.args.get('from')
-    if from_page == 'interests':
-        return redirect("/my_interests")
-    elif from_page == 'topics':
-        return redirect("/topics")
-    else:
-        return redirect("/")
-
-
-@app.route('/remove_tag/<string:tag>', methods=['GET'])
-def remove_tag(tag):
-
-    username = session['username']
-    
-    remove_tag_from_interests(username, tag)
-        
-    return redirect("/my_interests")
-
-
-@app.route("/my_interests")
-def my_interest():
-    username = session["username"]
-
-    query = request.args.get("query")
-    if query is None:
-        query = ""
-
-    my_interest = my_interest_list(username)
-    top_20_subjects = show_top_20_subjects()
-    tags = show_tags(query)
-
-    return render_template("interests.html", my_interest = my_interest, top_20_subjects = top_20_subjects, tags= tags)
-
-
 
 @app.route("/logout")
 def logout():

@@ -1,4 +1,3 @@
-
 .center {
     display: flex;
     justify-content: center;
@@ -6,15 +5,21 @@
     height: 100vh;
 }
 
-
 .navbar {
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0; 
+    right: 0;
     background-color: #ffffff;
     padding: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     z-index: 100;
 }
+
+.username-text {
+    text-align: right;
+    margin-right: 10px;
+  }
 
 .navbar-buttons a {
     margin-right: 10px;
@@ -120,26 +125,38 @@ a.back-link {
 
 .container {
     display: flex;
-    justify-content: space-between;
-    max-width: 700px;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 0;
+    margin-top: 330px;
 }
 
-.interests-list, .top20-list {
-    background-color: #e0f1fa;
+.side-bar {
+    position: fixed;
+    top: 330px;
+    right: 20px;
+    background-color: #ffffff00;
     border-radius: 15px;
     padding: 10px;
-    margin-bottom: 10px;
     word-wrap: break-word;
-    max-width: 200px;
+    z-index: 99;
+    max-width: 300px;
+    width: 100%;
 }
 
-.search-list {
+.interests-list, .top20-list, .search-list {
     background-color: #e0f1fa;
     border-radius: 15px;
     padding: 10px;
     margin-bottom: 10px;
     word-wrap: break-word;
     max-width: 300px;
+    width: 100%;
+}
+
+.text-element,.topics-element {
+    flex: 1;
+    margin-left: 20px;
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
