@@ -4,7 +4,9 @@ CREATE TABLE users (
     first_name TEXT,
     last_name TEXT,
     email TEXT,
-    password TEXT
+    password TEXT,
+    interests INT[],
+    visible Boolean
 );
 
 
@@ -14,30 +16,20 @@ CREATE TABLE topic (
     content TEXT,
     sender TEXT,
     tag TEXT,
-    score INT
+    score INT,
+    visible Boolean
 );
-
-INSERT INTO topic (header, content, sender, tag, score) VALUES ('Slava ukraini! Foorumin eka!', 'slava ukraini!', 'Tero', 'Sota', 130);
-INSERT INTO topic (header, content, sender, tag, score) VALUES ('Seppo takas!', 'Ei tuosta kepin heittelystä tule yhtään mitään.', 'Tuhnu66', 'Urheilu', 80);
-INSERT INTO topic (header, content, sender, tag, score) VALUES ('Esittävää taidetta kiitos!', 'Ketä kiinnostaa jotkut epämääriset kakkakipot', 'Summy', 'Tiede', 88 );
-INSERT INTO topic (header, content, sender, tag, score) VALUES ('Putinin tee resepti', 'Kiehauta vesi. Kun vesi on 110c niin lisää minttu ja polonium. Anna hautua', 'Tero', 'Sota', 104);
-INSERT INTO topic (header, content, sender, tag, score) VALUES ('RTX2090!', 'Nyt muuten pyörii doom!!!', 'Joku_Vaa', 'Teknologia', 98);
-INSERT INTO topic (header, content, sender, tag, score) VALUES ('Piirakka resepti?', 'Tietääkö joku hyvää piirakka reseptiä?', 'Saarx88', 'Ruoka', 100);
-
 
 CREATE TABLE messages (
     id SERIAL PRIMARY KEY,
     content TEXT,
     sender TEXT,
-    topic_id INT
+    topic_id INT,
+    visible Boolean
 );
 
-INSERT INTO messages (content, sender, topic_id)
-VALUES
-  ('Slava Ukraini!', 'Tero', 1),
-  ('Slava Ukraini!', 'Tuhnu66', 1),
-  ('Slava Ukraini!', 'Summy', 1),
-  ('Slava Ukraini!', 'Tero', 1),
-  ('Slava Ukraini!', 'Joku_Vaa', 1),
-  ('Slava Ukraini!', 'Saarx88', 1),
-  ('Täytyypä testata =)', 'Saarx88',4);
+CREATE TABLE tags (
+    id SERIAL PRIMARY KEY,
+    subject TEXT,
+    total TEXT  
+);
