@@ -109,6 +109,15 @@ a.back-link {
     border: 1px solid #ccc;
 }
 
+
+.topic_container {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    margin: 0;
+    margin-top: 250px;
+}
+
 .topic-header {
     text-align: center;
     padding: 10px;
@@ -159,4 +168,33 @@ a.back-link {
     margin-top: 0;
     margin-bottom: 0;
 }
+
+.new-topic-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    margin: 0;
+    margin-top: 250px;
+    margin-left: 50px;
+}
+
+textarea {
+    width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+
+textarea[name="tag"] {
+    max-width: 20%; 
+}
+
+textarea[name="header"] {
+    max-width: 40%; 
+}
+
+textarea[name="content"] {
+    max-width: 80%;
+}
+
 
