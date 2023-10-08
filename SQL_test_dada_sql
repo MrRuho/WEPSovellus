@@ -1,0 +1,605 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 15.4 (Ubuntu 15.4-1.pgdg20.04+1)
+-- Dumped by pg_dump version 15.4 (Ubuntu 15.4-1.pgdg20.04+1)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: fuzzystrmatch; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS fuzzystrmatch WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION fuzzystrmatch; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION fuzzystrmatch IS 'determine similarities and distance between strings';
+
+
+--
+-- Name: pg_trgm; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION pg_trgm; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION pg_trgm IS 'text similarity measurement and index searching based on trigrams';
+
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: messages; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.messages (
+    id integer NOT NULL,
+    content text,
+    sender text,
+    topic_id integer,
+    visible boolean
+);
+
+
+ALTER TABLE public.messages OWNER TO postgres;
+
+--
+-- Name: messages_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.messages_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.messages_id_seq OWNER TO postgres;
+
+--
+-- Name: messages_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.messages_id_seq OWNED BY public.messages.id;
+
+
+--
+-- Name: tags; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.tags (
+    id integer NOT NULL,
+    subject text,
+    total integer
+);
+
+
+ALTER TABLE public.tags OWNER TO postgres;
+
+--
+-- Name: tags_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.tags_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.tags_id_seq OWNER TO postgres;
+
+--
+-- Name: tags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.tags_id_seq OWNED BY public.tags.id;
+
+
+--
+-- Name: topic; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.topic (
+    id integer NOT NULL,
+    header text,
+    content text,
+    sender text,
+    tag text,
+    score integer,
+    visible boolean
+);
+
+
+ALTER TABLE public.topic OWNER TO postgres;
+
+--
+-- Name: topic_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.topic_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.topic_id_seq OWNER TO postgres;
+
+--
+-- Name: topic_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.topic_id_seq OWNED BY public.topic.id;
+
+
+--
+-- Name: user; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."user" (
+    id integer NOT NULL,
+    username character varying(80) NOT NULL,
+    first_name character varying(80) NOT NULL,
+    last_name character varying(80) NOT NULL,
+    email character varying(120) NOT NULL,
+    password_hash character varying(128) NOT NULL
+);
+
+
+ALTER TABLE public."user" OWNER TO postgres;
+
+--
+-- Name: user_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.user_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.user_id_seq OWNER TO postgres;
+
+--
+-- Name: user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.user_id_seq OWNED BY public."user".id;
+
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.users (
+    id integer NOT NULL,
+    username text,
+    first_name text,
+    last_name text,
+    email text,
+    password text,
+    visible boolean,
+    interests integer[]
+);
+
+
+ALTER TABLE public.users OWNER TO postgres;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.users_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.users_id_seq OWNER TO postgres;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
+-- Name: messages id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.messages ALTER COLUMN id SET DEFAULT nextval('public.messages_id_seq'::regclass);
+
+
+--
+-- Name: tags id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tags ALTER COLUMN id SET DEFAULT nextval('public.tags_id_seq'::regclass);
+
+
+--
+-- Name: topic id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.topic ALTER COLUMN id SET DEFAULT nextval('public.topic_id_seq'::regclass);
+
+
+--
+-- Name: user id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."user" ALTER COLUMN id SET DEFAULT nextval('public.user_id_seq'::regclass);
+
+
+--
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
+-- Data for Name: messages; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.messages (id, content, sender, topic_id, visible) FROM stdin;
+149	Testataan mitä tapahtuu jos kommentoi kun tämä on lukittu tähän	paaville	68	t
+150	Kävikö nyt niin että nämä tulevat listan kärkeen eikä pohjalle	paaville	68	t
+151	Katsotaan korjautuuko viestittely	paaville	74	t
+152	Ja toista viestiä het perään	paaville	74	t
+153	No minä laitan jotain tänne myöskin	Ruho	74	t
+154	No voihan se vaikka onnistua	Ruho	73	t
+155	Hyvin toimii	Yletys	77	t
+136	Kokeillaas laittaa toinen viesti perään	Ruho	61	t
+121	Viesti	Ruho	61	t
+115	jees	Ruho	55	t
+118	vielä jaksaa	Ruho	47	t
+117	ei riitä	Ruho	47	t
+116	punpataan	Ruho	47	t
+114	pumpataan	Ruho	47	t
+113	eikö vieläkään eka	Ruho	47	t
+137	Ja toinen lisää	Ruho	68	t
+138	MIksi tämä ei näy	Ruho	68	t
+139	No hitto	Ruho	61	t
+140	Tämän pitäisi näkyä	Ruho	47	t
+98	eeoo	Ruho	47	t
+99	joo	Ruho	47	t
+100	juu	Ruho	49	t
+101	juu	Ruho	47	t
+102	mit vit	Ruho	51	t
+103	Mahtavaa	Ruho	47	t
+104	niin on	Ruho	47	t
+105	no mutta	Ruho	47	t
+106	mit vit	Ruho	48	t
+107	vielä nousee	Ruho	47	t
+108	varmasti	Ruho	47	t
+109	varmasti	Ruho	50	t
+110	Hitto vie\r\n	Ruho	47	t
+156	Lisää vain testiä niin kyllä se siitä	Yletys	74	t
+157	Mauris hendrerit sed augue et maximus.	Yletys	80	t
+158	Nunc ullamcorper diam non turpis iaculis, id vestibulum mauris mollis. Nam sem enim, viverra non faucibus commodo, pellentesque ut eros.	Yletys	80	t
+159	Suspendisse augue augue, tristique id luctus quis, dignissim vitae libero. Suspendisse eget ipsum vulputate, efficitur leo quis, pretium ante. 	Ulla_pulla60	80	t
+160	Nyt tämä kommentointi on levittäytynyt täysin pituudeltaan.	Ulla_pulla60	74	t
+161	Paljonko tätä muuten tarvii kommentoida että nousee tuonne kärkeen	Ulla_pulla60	74	t
+162	m tincidunt sit amet risus nec malesuada. Mauris non ante at magna molestie posuere. Sed lacinia molestie ex sit amet placerat. Nulla facilisi. Vestibulum pulvinar risus in massa semper tempus. Donec luctus placerat augue, in ullamcorper est viverra nec.	Ulla_pulla60	74	t
+163	Kyllä se pitäis hiljalleen nousta	Ruho	74	t
+164	Mutta en sitten tiedä toimiiko	Ruho	74	t
+165	Kyllä tämä on minusta kivunnot ja vaikka kuinka korkealle	paaville	74	t
+166	Toimii sanon mä	paaville	74	t
+167	Nyt jo kolmantena	paaville	74	t
+168	Pitää testailla	paaville	84	t
+111	Mitä ihmettä	Ruho	55	t
+112	no mutta	Ruho	47	t
+119	NO mutta	Ruho	58	t
+120	Testaus	Ruho	50	t
+122	Komentti	Ruho	58	t
+123	KOmentti	Ruho	63	t
+124	KOmmi	Ruho	60	t
+125	Uusi käyttäjä	paaville	63	t
+126	Testailua lisää	paaville	62	t
+127	No mutta	paaville	63	t
+128	Vieläko saa\r\n	paaville	47	t
+129	Lisä pumppaus	paaville	47	t
+130	vielä	paaville	47	t
+131	ja lisää	paaville	47	t
+132	KOmmenttia pukkaa	paaville	47	t
+133	kai tämä jossakin kohti nousee ekaksi	paaville	47	t
+134	Menään kympin ohi	paaville	47	t
+141	No pistetään lisää viestiä	Ruho	68	t
+142	No lisääntyykö tämä neljään	Ruho	61	f
+143	Ja kommenttia pukkaa	Ruho	69	f
+144	YRITÄN MUOKATA TÄTÄ VIESTIÄ muokattu	Ruho	68	t
+145	Se on lopun alua	paaville	70	t
+146	Lisä kommentti	paaville	68	t
+135	JOku komentti	paaville	68	t
+147	Pistetääs tänne joku pitkä kommentti jotta nähdään toimiiko tuo kupla niinkuin luvattu on vai onko tämä pelkkaa paskaa	paaville	68	t
+148	Kopy pastetaan edellinen ja pistetään siitä vielä pitempi rimpsu jotta nähdään tomiiko tuo katkaisu niinkuin pitääkin "Pistetääs tänne joku pitkä kommentti jotta nähdään toimiiko tuo kupla niinkuin luvattu on vai onko tämä pelkkaa paskaa"	paaville	68	t
+\.
+
+
+--
+-- Data for Name: tags; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.tags (id, subject, total) FROM stdin;
+1	sota	2
+3	sote	1
+2	talous	2
+5	suomi23	1
+6	 yle kotimaa	1
+4	css	3
+7	yle_kotimaa	1
+8	yle kotimaa	2
+9	yle teknologia	1
+10	ullapulla leipoo	1
+\.
+
+
+--
+-- Data for Name: topic; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.topic (id, header, content, sender, tag, score, visible) FROM stdin;
+78	Orpolla menee lujaa!	Nyt muuten leikataan!	paaville	 yle kotimaa	58	t
+77	fiksattu korkeus	Tämän pitäisi nyt näkyä	paaville	css	54	t
+57	yksitoista	yyyiittoo	Ruho	t	-656	f
+56	Kymmenes	kyyyy PÄivitys. Lisämuokkaus.	Ruho	t	-712	f
+80	Lorem ipsum?	Mauris lorem nulla, tempus nec elit ut, gravida facilisis augue. Nulla bibendum eget ex non iaculis. Phasellus ut velit aliquet, mollis nunc eu, fringilla purus. Aenean gravida lorem in pellentesque consequat. Cras non velit non massa tristique porta. Ut accumsan faucibus felis, ut faucibus mauris euismod a. Pellentesque et diam justo.\r\n\r\nUt quis urna ac felis bibendum viverra vel id metus. Vestibulum tincidunt sit amet risus nec malesuada. Mauris non ante at magna molestie posuere. Sed lacinia molestie ex sit amet placerat. Nulla facilisi. Vestibulum pulvinar risus in massa semper tempus. Donec luctus placerat augue, in ullamcorper est viverra nec.	Yletys	yle_kotimaa	110	t
+55	yhdeksäs	yyyh Tätäkin on päivitetty	Ruho	t	-750	f
+54	kahdeksas	kaah	Ruho	t	-830	f
+53	seitsämäs	seee	Ruho	t	-892	f
+52	kuudes	kuu	Ruho	t	-956	f
+51	viides	vii	Ruho	t	-1012	f
+50	neljäs	neee	Ruho	t	-1070	f
+49	kolmas	koo	Ruho	t	-1150	f
+48	toka	too	Ruho	t	-1222	f
+47	eka	e	Ruho	t	-1076	f
+83	Lumin tehosta 20 prosenttia yrityksille	Supertietokone Lumin laskentatehoa on hyödyntänyt jo kymmenkunta yritystä. CSC Tieteen tietotekniikan keskus näkee, että supertietokoneen yrityskäytöllä on suuri merkitys koko Suomelle.	Yletys	yle teknologia	98	t
+82	Tuottaako tämä neljännen yle kotimaan.	Tämä onkin kinkkinen kysymys.	Yletys	yle kotimaa	94	t
+81	Lama-aikojen hittilaji	Minigolf, kolopallo, ratagolf ja pienoisgolf. Rakkaalla lapsella on monta nimeä.\r\n\r\nSuomi ei kuitenkaan ole ratagolfin suurmaa, eikä varsinkaan naapurimaa Ruotsin veroinen harrastaja- ja ratamäärissä laskettuna. Moni suomalainen on kuitenkin kokeillut minigolfia ainakin kerran elämässään.	Yletys	yle kotimaa	88	t
+79	Muutoksia	Kokeillaan toimiiko nyt	paaville	css	70	t
+76	Suomi on paras!	23 vuosi ollu täyttä timanttia	Ruho	suomi23	28	t
+75	Lama!	Lama on ovella se on varmaa	Ruho	talous	10	t
+73	Soteuudistus	Mitä mieltä olette?	paaville	sote	-22	t
+72	Lama!	Lama on tulossa se on varma	paaville	talous	-56	t
+71	Ukraina etenee	Ukrainaa yrittää maihin nousua. Mahtaakohan onnistua	paaville	sota	-82	t
+70	Venäjä perääntyy	Tämähän on tietysti toiveajattelua mutta tovossa on hyvä elää	paaville	sota	-100	t
+69	Tämä on uusin!!!	Todella uusi	Ruho	Uusin	-130	f
+67	Poisto	Poisto	paaville	Poisto	-206	\N
+66	tOISTO		paaville	poISTO	-242	\N
+65	Testi poisto	Nyt on muuten testiä	paaville	Poisto	-280	f
+64	Poisto	Tämänkohdalla pitäisi näkyä poisto	paaville	Appi	-320	f
+63	Siirto	Viesti	Ruho	Testi	-332	f
+62	T	T	Ruho	T	-396	f
+61	Uusinta uutta	testausat	Ruho	Testi	-412	f
+60	Vaikka kuinka mones	Vaik kuinka mones	Ruho	T	-490	f
+59	kolmetoista	koome	Ruho	t	-550	f
+58	kaksitoista	kaasiitoitaa	Ruho	t	-582	f
+84	Herkku omenapiirakka!	Raaka-aineet\r\n200 g\tmargariinia\r\n1,5 dl\tsokeria\r\n3 dl\tjauhoja\r\n1\tmuna\r\n0,75 dl\tmaitoa, huom. ei litroja.\r\n1 tl\tleivinjauhetta\r\n1 tl\tvaniljasokeria\r\n3-4\tomenaa\r\nkanelia ja sokeria\r\n\r\nOhje\r\n \r\nOmenapiirakka:\r\n\r\nSulata rasva tai käytä pullomargariinia.\r\nSekoita kulhossa sokerin kanssa.\r\nLisää jauhot (ei vielä leivinjauhetta). Jauhoja kannattaa lisätä hiljalleen, sillä taikinasta ei tulisi tulla kovin kuivaa tässä vaiheessa. Ota tässä kohtaa sivuun kahvikupillinen taikinaa; se ripotellaan valmiin piirakan päälle.\r\nLisää nyt taikinakulhoon muna, maito, leivinjauhe ja vaniljasokeri. Sekoita puulusikalla kovaa tasaiseksi. Taikina on valuvaa tässä vaiheessa, eli ei esim. pysy vuoan reunoilla, muttei myöskään ole litkua.\r\nKaada taikina voideltuun tavalliseen piirakkavuokaan ja ripottele päälle omenapalat. Itse käytän mitä tahansa omenalajia, jota kotona sattuu olemaan. Jos omena on hapanta, pinnalle kannattaa laittaa vähän runsaammin sokeria. Tällä taikinalla on tehty onnistuneita piirakoita kaikista hedelmistä, joten kokeilla voi.\r\nRipottele pinnalle kanelia ja sokeria sekä sivuun alussa jätetty taikina.\r\nPaista 200 asteessa n. 30 min.\r\nParasta tarjoiltuna lyhyen vetäytymisen jälkeen kylmän vaniljakastikkeen tai -jäätelön kanssa.	Ulla_pulla60	ullapulla leipoo	110	t
+74	CSS tyylittely	\r\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce fringilla urna vitae diam ornare, vel dapibus quam condimentum. Vestibulum condimentum efficitur felis nec posuere. Morbi mauris libero, vehicula nec mollis non, lacinia id quam. Vestibulum bibendum lorem est. Curabitur semper tempus felis blandit facilisis. In arcu tortor, pharetra ut tellus ac, aliquet consectetur nisl. Nullam placerat ex in purus pharetra, in pretium mauris auctor.	paaville	css	110	t
+68	Näkyykö	\r\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Ut laoreet, mauris sed vehicula porta, enim lorem varius nisi, et vehicula ipsum eros in nisi. Ut massa arcu, convallis ac dapibus a, sodales eget mi. Donec molestie elit a massa semper porta. Donec consequat ipsum a mi ornare gravida. Vestibulum scelerisque eget ipsum sed bibendum. Interdum et malesuada fames ac ante ipsum primis in faucibus. Duis quis cursus justo, quis scelerisque dolor. Donec vulputate at est eget faucibus. Morbi ut tortor eget mauris porttitor ornare. Aenean consectetur sem lectus, sit amet posuere felis volutpat in.\r\n\r\nNulla porttitor quis lacus eu sollicitudin. Sed in viverra massa, eget euismod leo. Phasellus mauris nibh, maximus eu eros ac, interdum auctor erat. Morbi sed purus tincidunt, gravida augue et, consectetur ipsum. Fusce lacinia pretium risus. Interdum et malesuada fames ac ante ipsum primis in faucibus. Mauris porta convallis semper. Donec consectetur quam sed vestibulum tincidunt. Praesent a nulla neque. Nulla tincidunt metus eu volutpat ullamcorper. Phasellus vulputate erat vitae dolor facilisis, nec lacinia sem cursus. Vivamus vel faucibus nibh. Praesent tempor vestibulum est, a tempor nunc.	paaville	Näkyvyys	-72	f
+\.
+
+
+--
+-- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."user" (id, username, first_name, last_name, email, password_hash) FROM stdin;
+\.
+
+
+--
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.users (id, username, first_name, last_name, email, password, visible, interests) FROM stdin;
+2	testi	testi	testi	testi	pbkdf2:sha256:600000$tpwiCC82boVoOxnE$4e166d015e9e56ef58ee7a1527b643d409dcbfaba1fc96bed081d51ad80e6d54	t	\N
+3	Tero	Susi	Hukka	Hukka.Susi@kumma.com	pbkdf2:sha256:600000$hOG1dMGB8fnoArut$3008032ec914af561c995964d7b0d0882fcb57e9a23a4d5788b5d107ea0c3972	t	\N
+5	Veikko	Veikko	Tupajumi	Tupa@gmail.com	pbkdf2:sha256:600000$wpskZGWIZYu6XnhC$51dbee4d7f0306436d1aeb87fdb01b3f5d91b6c3953f99dcc73b9afe65cc29b0	\N	{6}
+6	Yletys	Ylen	Poika	Ylen@poika.com	pbkdf2:sha256:600000$UnnQT7m6VeiuQOXG$7434729c0e7784f04516507ee01bdd70cbc71c8416135e2618d726b73ecaea23	\N	{6,7,8}
+7	Ulla_pulla60	Ulla	Pulla	Ulla@pulla@gmail.com	pbkdf2:sha256:600000$0V6HzNhuqCQtzmS1$84688bbca30f7eb90772ed25ec1d7044bec3a1a16f0dd136d4cbed9b56e42821	\N	{4}
+1	Ruho	Ville	Paajanen	Ruho@mail.com	pbkdf2:sha256:600000$sLcz47DT3W85X97M$5e560bd776c84dc3fd35c1cd4e5af371cdca5bce02008a03139ebed3fe0d67ea	t	{5,3,2,1,4}
+4	paaville	Ville	Paajanen	paajanen.ville@gmail.com	pbkdf2:sha256:600000$XBN5tA5wHpitOQXI$4990f20f53043e64b8c21b77d0959dbb51652c768c5c9c0879cd731ded2375e3	t	{1,2,6,4}
+\.
+
+
+--
+-- Name: messages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.messages_id_seq', 168, true);
+
+
+--
+-- Name: tags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.tags_id_seq', 10, true);
+
+
+--
+-- Name: topic_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.topic_id_seq', 84, true);
+
+
+--
+-- Name: user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.user_id_seq', 1, false);
+
+
+--
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.users_id_seq', 7, true);
+
+
+--
+-- Name: messages messages_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.messages
+    ADD CONSTRAINT messages_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tags tags_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tags
+    ADD CONSTRAINT tags_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: topic topic_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.topic
+    ADD CONSTRAINT topic_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user user_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."user"
+    ADD CONSTRAINT user_email_key UNIQUE (email);
+
+
+--
+-- Name: user user_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."user"
+    ADD CONSTRAINT user_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user user_username_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."user"
+    ADD CONSTRAINT user_username_key UNIQUE (username);
+
+
+--
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: TABLE messages; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON TABLE public.messages TO dmesg;
+
+
+--
+-- Name: SEQUENCE messages_id_seq; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON SEQUENCE public.messages_id_seq TO dmesg;
+
+
+--
+-- Name: TABLE tags; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON TABLE public.tags TO dmesg;
+
+
+--
+-- Name: SEQUENCE tags_id_seq; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON SEQUENCE public.tags_id_seq TO dmesg;
+
+
+--
+-- Name: TABLE topic; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON TABLE public.topic TO dmesg;
+
+
+--
+-- Name: SEQUENCE topic_id_seq; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON SEQUENCE public.topic_id_seq TO dmesg;
+
+
+--
+-- Name: TABLE "user"; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON TABLE public."user" TO dmesg;
+
+
+--
+-- Name: SEQUENCE user_id_seq; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON SEQUENCE public.user_id_seq TO dmesg;
+
+
+--
+-- Name: TABLE users; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON TABLE public.users TO dmesg;
+
+
+--
+-- Name: SEQUENCE users_id_seq; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON SEQUENCE public.users_id_seq TO dmesg;
+
+
+--
+-- PostgreSQL database dump complete
+--
+
