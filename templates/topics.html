@@ -71,9 +71,9 @@
               </ul>
           </div>
           <div class="top20-list">
-              <h2>Aiheet top 20:</h2>
+              <h2>Aiheet top 5:</h2>
               <ul>
-                  {% for tag in top_20_subjects %}
+                  {% for tag in top_subjects %}
                       <li>
                           <a href="/follow_tag/{{ tag }}?from=interests">{{ tag }}</a>
                       </li>

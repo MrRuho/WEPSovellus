@@ -1,7 +1,7 @@
 from flask import redirect, render_template, request, session
 from app import app
 from sqlalchemy.sql import text
-from sql import update_topic_scores,publish_topic,selected_topic,topic_comments,show_topics,latest_topic,new_user,add_comment,hide_topic, update_topic,hide_comment,get_topic_id_from_comment_id,selected_comment,update_comment,add_topic_to_tag_table,add_tag_to_interests,my_interest_list,show_top_20_subjects,remove_tag_from_interests,show_tags,db
+from sql import update_topic_scores,publish_topic,selected_topic,topic_comments,show_topics,latest_topic,new_user,add_comment,hide_topic, update_topic,hide_comment,get_topic_id_from_comment_id,selected_comment,update_comment,add_topic_to_tag_table,add_tag_to_interests,my_interest_list,show_top_subjects,remove_tag_from_interests,show_tags,db
 from werkzeug.security import check_password_hash, generate_password_hash
 
 @app.route("/")
@@ -32,10 +32,10 @@ def login():
             topics = show_topics(query,show_interests,username)
             latest = latest_topic(username,show_interests)
             my_interest = my_interest_list(username)
-            top_20_subjects = show_top_20_subjects()
+            top_subjects = show_top_subjects()
             tags = show_tags(tag_query)
            
-            return render_template("/topics.html", topics=topics, latest_topic=latest,show_interests=show_interests,show_interests_text=show_interests_text,my_interest = my_interest, top_20_subjects = top_20_subjects, tags= tags)
+            return render_template("/topics.html", topics=topics, latest_topic=latest,show_interests=show_interests,show_interests_text=show_interests_text,my_interest = my_interest, top_subjects = top_subjects, tags= tags)
         else:
             return render_template("index.html", not_password=True)
 
@@ -96,11 +96,11 @@ def topic():
     latest = latest_topic(username,show_interests)
 
     my_interest = my_interest_list(username)
-    top_20_subjects = show_top_20_subjects()
+    top_subjects = show_top_subjects()
  
     tags = show_tags(tag_query)
 
-    return render_template("topics.html",topics=topics, latest_topic=latest, query=query, show_interests=show_interests, show_interests_text=show_interests_text, toggle_show_interests=toggle_show_interests,my_interest = my_interest, top_20_subjects = top_20_subjects, tags= tags)
+    return render_template("topics.html",topics=topics, latest_topic=latest, query=query, show_interests=show_interests, show_interests_text=show_interests_text, toggle_show_interests=toggle_show_interests,my_interest = my_interest, top_subjects = top_subjects, tags= tags)
 
 
 @app.route('/follow_tag/<string:tag>', methods=['GET'])

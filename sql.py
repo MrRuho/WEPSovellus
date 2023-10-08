@@ -253,8 +253,8 @@ def my_interest_list(username):
     interest_tags = [row.subject for row in result]
     return interest_tags
 
-def show_top_20_subjects():
-    sql = text("SELECT subject FROM tags ORDER BY total DESC LIMIT 20")
+def show_top_subjects():
+    sql = text("SELECT subject FROM tags ORDER BY total DESC LIMIT 5")
     result = db.session.execute(sql)
     subjects = [row.subject for row in result]
     return subjects
