@@ -1,6 +1,6 @@
 from sqlalchemy.sql import text
 from flask_sqlalchemy import SQLAlchemy
-
+from werkzeug.security import check_password_hash, generate_password_hash
 db = SQLAlchemy()
 
 # Display the most popular topic at first, based on the highest number of points. 
@@ -170,7 +170,7 @@ def new_user(username, first_name,last_name, email, hash_value):
     if userExists > 0:
         return False
     else:
-        sql = text("INSERT INTO users (username,first_name,last_name, email ,password) VALUES (:username, :first_name,:last_name,:email ,:password)")
+        sql = text("INSERT INTO users (username, first_name, last_name, email, password, visible) VALUES (:username, :first_name, :last_name, :email, :password, true)")
         db.session.execute(sql, {"username":username, "first_name":first_name, "last_name":last_name, "email":email, "password":hash_value})
         db.session.commit()
         return
@@ -258,4 +258,34 @@ def show_top_subjects():
     result = db.session.execute(sql)
     subjects = [row.subject for row in result]
     return subjects
- 
+
+def user_profile(username):
+    sql = text("SELECT username, first_name, last_name, email FROM users WHERE username = :username")
+    result = db.session.execute(sql,  {"username": username})
+    user_data = result.fetchone()
+    return user_data
+
+def hide_user(username,password):
+    sql = text("SELECT id, password FROM users WHERE username=:username")
+    result = db.session.execute(sql, {"username":username})
+    user = result.fetchone()
+    hash_value = user.password
+    if check_password_hash(hash_value, password):
+        sql = text("UPDATE users SET visible = false WHERE username = :username")
+        db.session.execute(sql, {"username": username})
+        db.session.commit()
+        return True
+    return False
+
+def user_new_password(username,password,new_password):
+    sql = text("SELECT id, password FROM users WHERE username=:username")
+    result = db.session.execute(sql, {"username":username})
+    user = result.fetchone()
+    hash_value = user.password
+    if check_password_hash(hash_value, password):
+        sql = text("UPDATE users SET password= :password WHERE username=:username")
+        new_hash_value = generate_password_hash(new_password)
+        db.session.execute(sql, {"username": username, "password":new_hash_value})
+        db.session.commit()
+        return True
+    return False

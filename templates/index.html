@@ -21,8 +21,12 @@
 {% endif %}
 
 {% if not_user %}
-<p>Käyttäjä tunnusta ei löydy.</p>
+<p>Käyttäjä tunnusta ei löydy</p>
 {% endif %}
 {% if not_password %}
 <p>Väärä salasana!</p>
 {% endif %}
+{% if deleted_user %}
+<p>Postettu käyttäjätunnus</p>
+{% endif %}
+

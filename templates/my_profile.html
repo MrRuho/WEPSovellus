@@ -16,8 +16,51 @@
         <a href="/logout">Kirjaudu ulos</a>
       </div>
     </div>
+
     <div class="topic_container">
-    <p>WORK IN PROGRESS....</p>
+      <h3>Käyttäjätiedot</h3>
+      <p>Käyttäjänimi: {{ user.username }}</p>
+      <p>Etunimi: {{ user.first_name }}</p>
+      <p>Sukunimi: {{ user.last_name }}</p>
+      <p>Sähköpostiosoite: {{ user.email }}</p>
+      <p>
+        <a href="/profile?change_password=1">Vaihda salasana</a>
+      </p>
+      {% if change_password %}
+        <form action="/change_password" method="POST">
+          <p>Anna vanha salasana<br>
+          <input type="password" name="password" maxlength="20"></p>
+          <p>Anna uusi salasana<br>
+          <input type="password" name="new_password" maxlength="20"></p>
+          <input type="submit" name="password_changed" value="Vaihda salasana">
+        </form>
+      {% endif %}
+      {% if short_password %}
+        <p>Salasanan on oltava vähintään 5 merkkiä pitkä</p>
+      {% endif %}
+      {% if password_changed %}
+        <p>Salasana vaihdettu</p>
+      {% endif %}
+      <p>
+        <a href="/profile?confirm_delete=1">Poista tili</a>
+      </p>
     </div>
+    {% if confirm_delete %}
+    <p> HUOM! POISTETTUA TILIÄ EI VOI SAADA TAKAISIN</p>
+      <form action="/profile?confirm_delete=0" method="POST">
+        <input type="hidden" name="cancel" value="true">
+        <input type="submit" value="Peru">
+      </form>
+      <br>
+      <form action="/delete_account" method="POST">
+        <p>Anna salasana ja tilisi poistetaan:<br>
+        <input type="password" name="password" maxlength="20"></p>
+        <input type="submit" value="Poista tili">
+      </form>
+    {% endif %}
+    {% if wrong_password %}
+    <p>Väärä salasana</p>
+    {% endif %}
+
   </body>
 </html>

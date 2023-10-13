@@ -1,7 +1,7 @@
 from flask import redirect, render_template, request, session
 from app import app
 from sqlalchemy.sql import text
-from sql import update_topic_scores,publish_topic,selected_topic,topic_comments,show_topics,latest_topic,new_user,add_comment,hide_topic, update_topic,hide_comment,get_topic_id_from_comment_id,selected_comment,update_comment,add_topic_to_tag_table,add_tag_to_interests,my_interest_list,show_top_subjects,remove_tag_from_interests,show_tags,db
+from sql import update_topic_scores,publish_topic,selected_topic,topic_comments,show_topics,latest_topic,new_user,add_comment,hide_topic, update_topic,hide_comment,get_topic_id_from_comment_id,selected_comment,update_comment,add_topic_to_tag_table,add_tag_to_interests,my_interest_list,show_top_subjects,remove_tag_from_interests,show_tags,user_profile,hide_user,user_new_password,db
 from werkzeug.security import check_password_hash, generate_password_hash
 
 @app.route("/")
@@ -16,10 +16,12 @@ def login():
     password = request.form["password"]
 
     # Check the username and password. If they are correct, move to /topics; otherwise, display an error message
-    sql = text("SELECT id, password FROM users WHERE username=:username")
+    sql = text("SELECT id, password, visible FROM users WHERE username=:username")
     result = db.session.execute(sql, {"username":username})
     user = result.fetchone()
-    if not user:
+    if user.visible == False:
+        return render_template("index.html", deleted_user=True)
+    elif not user:
         return render_template("index.html", not_user=True)
     else:
         hash_value = user.password
@@ -231,10 +233,52 @@ def comment():
 
     return redirect(f"/view_topic/{topic_id}")
 
-@app.route("/profile")
+@app.route("/profile",methods=["GET", "POST"])
 def profile():
+    username = session['username']
+    user = user_profile(username)
+    confirm_delete = request.args.get("confirm_delete") == "1"
+    wrong_password = request.args.get("wrong_password") == "1"
+    change_password = request.args.get("change_password") == "1"
+    password_changed = request.args.get("password_changed") == "1"
+    short_password = request.args.get("short_password") == "1"
+ 
+    if request.method == "POST":
 
-    return render_template("my_profile.html")
+        if "cancel" in request.form:
+            return redirect("/profile")
+    
+    return render_template("my_profile.html", user=user, confirm_delete=confirm_delete, wrong_password=wrong_password, change_password=change_password, password_changed=password_changed, short_password = short_password  )
+
+@app.route("/change_password",methods=["POST"])
+def change_password():
+
+    username = session['username']
+    password = request.form["password"]
+    new_password = request.form["new_password"]
+
+    if len(new_password) < 5:
+        return redirect("/profile?short_password=1")
+
+    correct_password = user_new_password(username,password,new_password)
+
+    if correct_password:
+        return redirect("/profile?password_changed=1")
+    else:
+        return redirect("/profile?wrong_password=1")
+
+
+@app.route("/delete_account",methods=["POST"])
+def delete_account():
+
+    username = session['username']
+    password = request.form["password"]
+    correct_password = hide_user(username, password)
+
+    if correct_password:
+        return redirect("/logout")
+    else:
+        return redirect("/profile?wrong_password=1")
 
 
 @app.route("/logout")
