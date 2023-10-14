@@ -12,6 +12,7 @@
             <div class="navbar-links">
               <a href="/topics">Aiheet</a>
               <a href="/profile">Oma profiili</a>
+              {% if admin %}<a href="/admin">Admin työkalut</a>{% endif %}
               <a href="/logout">Kirjaudu ulos</a>
             </div>
             <div style="text-align: center;">
@@ -31,10 +32,12 @@
                 <p>{{ topic.sender }}</p>
             </div>
         </div>
-        {% if topic.sender == session.username %}
+        {% if topic.sender == session.username or admin %}
             <form id="delete-form" action="/hide_topic/{{ topic.id }}" method="POST" style="display: inline;">
                 <input type="submit" value="Poista" class="custom-button" onclick="return confirm('Haluatko varmasti poistaa viestin?');">
             </form>
+        {% endif %}
+        {% if topic.sender == session.username %}
             <form id="edit-form" action="/edit_topic/{{ topic.id }}" method="POST" style="display: inline;">
                 <input type="submit" value="Muokkaa" class="custom-button">
             </form>
@@ -48,11 +51,13 @@
                     <div class="comment-bubble">
                         <p class="comment-sender">{{ comment.sender }}:</p>
                         <p>{{ comment.content }}</p>
-                        {% if comment.sender == session.username %}
+                        {% if comment.sender == session.username or admin %}
                             <form id="delete-form" action="/delete_comment/{{ comment.id }}" method="POST" style="display: inline;">
                                 <input type="hidden" name="comment_id" value="{{ comment.id }}">
                                 <input type="submit" value="Poista" class="custom-button" onclick="return confirm('Haluatko varmasti poistaa viestin?');">
                             </form>
+                        {% endif %}
+                        {% if comment.sender == session.username%}
                             <form id="edit-form" action="/edit_comment/{{ comment.id }}" method="POST" style="display: inline;">
                                 <input type="hidden" name="comment_id" value="{{ comment.id }}">
                                 <input type="submit" value="Muokkaa" class="custom-button"> 

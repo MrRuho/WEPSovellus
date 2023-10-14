@@ -1,7 +1,7 @@
 from flask import redirect, render_template, request, session
 from app import app
 from sqlalchemy.sql import text
-from sql import update_topic_scores,publish_topic,selected_topic,topic_comments,show_topics,latest_topic,new_user,add_comment,hide_topic, update_topic,hide_comment,get_topic_id_from_comment_id,selected_comment,update_comment,add_topic_to_tag_table,add_tag_to_interests,my_interest_list,show_top_subjects,remove_tag_from_interests,show_tags,user_profile,hide_user,user_new_password,db
+from sql import update_topic_scores,publish_topic,selected_topic,topic_comments,show_topics,latest_topic,new_user,add_comment,hide_topic, update_topic,hide_comment,get_topic_id_from_comment_id,selected_comment,update_comment,add_topic_to_tag_table,add_tag_to_interests,my_interest_list,show_top_subjects,remove_tag_from_interests,show_tags,user_profile,hide_user,user_new_password,role,all_users,add_topic_to_block_list,show_blocked_tags,remove_topic_from_block_list,db
 from werkzeug.security import check_password_hash, generate_password_hash
 
 @app.route("/")
@@ -75,6 +75,7 @@ def AddNewUser():
 @app.route("/topics", methods=["GET"])
 def topic():
     username = session["username"]
+
     query = request.args.get("query")
     if query is None:
         query = ""
@@ -101,15 +102,15 @@ def topic():
     top_subjects = show_top_subjects()
  
     tags = show_tags(tag_query)
+    admin = role(username)
 
-    return render_template("topics.html",topics=topics, latest_topic=latest, query=query, show_interests=show_interests, show_interests_text=show_interests_text, toggle_show_interests=toggle_show_interests,my_interest = my_interest, top_subjects = top_subjects, tags= tags)
+    return render_template("topics.html",topics=topics, latest_topic=latest, query=query, show_interests=show_interests, show_interests_text=show_interests_text, toggle_show_interests=toggle_show_interests,my_interest = my_interest, top_subjects = top_subjects, tags= tags, admin=admin)
 
 
 @app.route('/follow_tag/<string:tag>', methods=['GET'])
 def follow_tag(tag):
-
     username = session['username']
-    
+
     add_tag_to_interests(username, tag)
         
     return redirect("/topics")
@@ -146,19 +147,19 @@ def send():
 # Shows the selected topic and comments
 @app.route("/view_topic/<int:topic_id>")
 def view_topic(topic_id):
-
+    username = session["username"]
     topic = selected_topic(topic_id)
     comments = topic_comments(topic_id)
-
-    return render_template("view_topic.html", topic=topic, comments=comments)
+    admin = role(username)
+    return render_template("view_topic.html", topic=topic, comments=comments,admin=admin)
 
 # "Delete" topic. (This only hides it but no one can see it anymore)
 @app.route("/hide_topic/<int:topic_id>", methods=["POST"])
 def delete_topic(topic_id):
-
+    username = session["username"]
     topic = selected_topic(topic_id)
-    
-    if topic is not None and topic.sender == session["username"]:
+    admin = role(username)
+    if topic is not None and topic.sender == session["username"] or admin:
         hide_topic(topic_id)
 
     return redirect("/topics")
@@ -190,14 +191,14 @@ def modify_topic():
 
 @app.route('/delete_comment/<int:comment_id>', methods=['POST'])
 def delete_comment(comment_id):
-
+    username = session['username']
     hide_comment(comment_id)
- 
+    admin = role(username)
     topic_id = get_topic_id_from_comment_id(comment_id)
     topic = selected_topic(topic_id)
     comments = topic_comments(topic_id)
 
-    return render_template("view_topic.html", topic=topic, comments=comments)
+    return render_template("view_topic.html", topic=topic, comments=comments, admin=admin)
 
 
 @app.route('/edit_comment/<int:comment_id>', methods=['POST'])
@@ -237,6 +238,7 @@ def comment():
 def profile():
     username = session['username']
     user = user_profile(username)
+    admin = role(username)
     confirm_delete = request.args.get("confirm_delete") == "1"
     wrong_password = request.args.get("wrong_password") == "1"
     change_password = request.args.get("change_password") == "1"
@@ -248,7 +250,7 @@ def profile():
         if "cancel" in request.form:
             return redirect("/profile")
     
-    return render_template("my_profile.html", user=user, confirm_delete=confirm_delete, wrong_password=wrong_password, change_password=change_password, password_changed=password_changed, short_password = short_password  )
+    return render_template("my_profile.html", user=user, confirm_delete=confirm_delete, wrong_password=wrong_password, change_password=change_password, password_changed=password_changed, short_password = short_password, admin=admin)
 
 @app.route("/change_password",methods=["POST"])
 def change_password():
@@ -270,7 +272,6 @@ def change_password():
 
 @app.route("/delete_account",methods=["POST"])
 def delete_account():
-
     username = session['username']
     password = request.form["password"]
     correct_password = hide_user(username, password)
@@ -280,8 +281,46 @@ def delete_account():
     else:
         return redirect("/profile?wrong_password=1")
 
+@app.route("/admin", methods=["GET"])
+def admin_tools():
+    username = session['username']
+    admin = role(username)
+    query = request.args.get("query")
+    if query is None:
+        query = ""
+    
+    tag_query = request.args.get("tag_query")
+    if tag_query is None:
+        tag_query = ""
+
+    blocked_tag_query = request.args.get("blocked_tag_query")
+    if blocked_tag_query is None:
+        blocked_tag_query = ""
+
+    if admin:
+        users = all_users(query)
+        tags = show_tags(tag_query)
+        blocked_tags = show_blocked_tags(blocked_tag_query)
+
+    return render_template("admin.html", admin=admin, users=users, tags=tags, blocked_tags=blocked_tags)
+
+@app.route('/block_tag/<string:tag>', methods=['GET'])
+def block_tag(tag):
+
+    add_topic_to_block_list(tag)
+
+    return redirect("/admin")
+
+@app.route('/release_tag/<string:tag>', methods=['GET'])
+def release_tag(tag):
+
+    remove_topic_from_block_list(tag)
+
+    return redirect("/admin")
+
 
 @app.route("/logout")
 def logout():
     del session["username"]
+
     return redirect("/")

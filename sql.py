@@ -1,6 +1,7 @@
 from sqlalchemy.sql import text
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
+from datetime import datetime, timedelta
 db = SQLAlchemy()
 
 # Display the most popular topic at first, based on the highest number of points. 
@@ -46,6 +47,11 @@ def show_topics(query,show_interests,username):
         params["username"] = username
 
     sql += """
+        AND t.tag NOT IN (
+            SELECT name
+            FROM block_list
+            WHERE category = 'subject'
+        )
         GROUP BY t.id, t.header, t.sender, t.tag, t.visible
         ORDER BY t.score DESC
     """
@@ -81,6 +87,11 @@ def latest_topic(username, show_interests):
         """
 
     sql += """
+        AND t.tag NOT IN (
+                SELECT name
+                FROM block_list
+                WHERE category = 'subject'
+            )
     GROUP BY t.id, t.header, t.sender, t.tag, t.visible
     """
     params = {"username": username}
@@ -91,11 +102,37 @@ def latest_topic(username, show_interests):
     return latest_topic
 
 def show_tags(query):
-    sql = text("SELECT subject FROM tags WHERE (:query = '' OR ( LOWER(subject) LIKE LOWER(:query) ) )")
+    sql = text("""
+        SELECT tags.subject
+        FROM tags
+        WHERE (:query = '' OR (LOWER(tags.subject) LIKE LOWER(:query))
+        ) AND tags.subject NOT IN (
+            SELECT name
+            FROM block_list
+            WHERE name = tags.subject
+            AND category = 'subject'
+        )
+    """)
     params = {"query": f"%{query}%"}
     result = db.session.execute(sql, params)
-    tags = [row[0] for row in result.fetchall()]
+    tags = [row.subject for row in result.fetchall()]
     return tags
+
+def show_blocked_tags(blocked_tag_query):
+    sql = text("""
+        SELECT name 
+        FROM block_list
+        WHERE category = 'subject' AND (
+            :blocked_tag_query = ''
+            OR (
+                LOWER(name) LIKE LOWER(:blocked_tag_query)    
+            )
+        )
+    """)
+    result = db.session.execute(sql, {"blocked_tag_query": blocked_tag_query})
+    blocked_tags = [row[0] for row in result.fetchall()] 
+    return blocked_tags
+
 
 def topic_comments(topic_id):
     comments_query = text("SELECT id, content, sender, visible FROM messages WHERE topic_id = :topic_id")
@@ -242,19 +279,24 @@ def remove_tag_from_interests(username, tag):
     db.session.commit()
 
 def my_interest_list(username):
-
     sql = text("""
         SELECT tags.subject
         FROM users
         JOIN tags ON tags.id = ANY(users.interests)
         WHERE users.username = :username
+        AND tags.subject NOT IN (
+            SELECT name
+            FROM block_list
+            WHERE name = tags.subject
+            AND category = 'subject'
+        )
     """)
     result = db.session.execute(sql, {"username": username})
     interest_tags = [row.subject for row in result]
     return interest_tags
 
 def show_top_subjects():
-    sql = text("SELECT subject FROM tags ORDER BY total DESC LIMIT 5")
+    sql = text("SELECT subject FROM tags WHERE subject NOT IN (SELECT name FROM block_list WHERE name = tags.subject AND category = 'subject') ORDER BY total DESC LIMIT 5")
     result = db.session.execute(sql)
     subjects = [row.subject for row in result]
     return subjects
@@ -289,3 +331,52 @@ def user_new_password(username,password,new_password):
         db.session.commit()
         return True
     return False
+
+def role(username):
+    sql = text("SELECT role FROM users WHERE username=:username")
+    result = db.session.execute(sql, {"username": username})
+    role = result.fetchone()
+    if role and (role[0] == "Master" or role[0] == "Admin"):
+        return True
+    else:
+        return False
+    
+def all_users(query):
+    sql = text("""SELECT username, first_name, last_name, email, visible, role 
+                FROM users
+                WHERE (
+                :query = ''
+                    OR (
+                        LOWER(username) LIKE LOWER(:query)    
+                    )
+                    OR (
+                        LOWER(first_name) LIKE LOWER(:query)
+                    )
+                    OR (
+                        LOWER(last_name) LIKE LOWER(:query)
+                    )
+                    OR (
+                        LOWER(email) LIKE LOWER(:query)
+                    )
+                    OR (
+                        LOWER(role) LIKE LOWER(:query)
+                    )
+                )
+            """)
+    result = db.session.execute(sql, {"query": query})
+    users = result.fetchall()
+    return users
+
+
+def add_topic_to_block_list(tag):
+    duration = timedelta(days=365 * 9999)
+
+    sql = text("INSERT INTO block_list (name, category, blocked_at, duration) VALUES (:tag, 'subject', :timestamp, :duration)")
+    db.session.execute(sql, {"tag": tag, "subject": tag, "timestamp": datetime.utcnow(), "duration": duration})
+    db.session.commit()
+
+def remove_topic_from_block_list(tag):
+    sql = text("DELETE FROM block_list WHERE name = :name AND category = 'subject'")
+    db.session.execute(sql, {"name": tag})
+    db.session.commit()
+
