@@ -129,7 +129,9 @@ def show_blocked_tags(blocked_tag_query):
             )
         )
     """)
-    result = db.session.execute(sql, {"blocked_tag_query": blocked_tag_query})
+
+    params = {"blocked_tag_query": f"%{blocked_tag_query}%"}
+    result = db.session.execute(sql, params)
     blocked_tags = [row[0] for row in result.fetchall()] 
     return blocked_tags
 
@@ -363,8 +365,9 @@ def all_users(query):
                     )
                 )
             """)
-    result = db.session.execute(sql, {"query": query})
-    users = result.fetchall()
+    
+    params = {"query": f"%{query}%"}
+    users = db.session.execute(sql, params)
     return users
 
 

@@ -61,7 +61,7 @@
       </div>
       
       <div class="side-bar">
-          <div class="interests-list">
+          <div class="scrollable-list">
               <h2>Seuratut aiheet:</h2>
               <ul>
               {% for tag in my_interest %}
@@ -71,7 +71,7 @@
               {% endfor %}
               </ul>
           </div>
-          <div class="top20-list">
+          <div class="scrollable-list">
               <h2>Aiheet top 5:</h2>
               <ul>
                   {% for tag in top_subjects %}
@@ -81,11 +81,11 @@
                   {% endfor %}
               </ul>
           </div>
-          <div class="search-list">
-              <form action="/topics" method="GET" style="display: inline-block; margin-top: 20px;">
-                  <input type="text" name="tag_query" value="{{ tag_query }}">
-                  <input type="submit" value="Hae">
-              </form>
+          <form action="/topics" method="GET" style="display: inline-block; margin-top: 20px;">
+            <input type="text" name="tag_query" value="{{ tag_query }}">
+            <input type="submit" value="Hae">
+          </form>
+          <div class="scrollable-list">
               <ul>
                   {% for tag in tags %}
                       <li>

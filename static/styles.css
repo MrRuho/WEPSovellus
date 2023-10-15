@@ -198,3 +198,14 @@ textarea[name="content"] {
 }
 
 
+.scrollable-list {
+    background-color: #e0f1fa;
+    border-radius: 15px;
+    padding: 10px;
+    margin-bottom: 10px;
+    word-wrap: break-word;
+    max-width: 300px;
+    width: 100%;
+    overflow-y: auto;
+    max-height: 300px;
+}

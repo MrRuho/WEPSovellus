@@ -40,11 +40,11 @@
     </div>
     <div class="side-bar">
       <H3>Aiheet:</H3>
-      <div class="search-list">
-          <form action="/admin" method="GET" style="display: inline-block; margin-top: 20px;">
-              <input type="text" name="tag_query" value="{{ tag_query }}">
-              <input type="submit" value="Hae">
-          </form>
+      <form action="/admin" method="GET" style="display: inline-block; margin-top: 20px;">
+        <input type="text" name="tag_query" value="{{ tag_query }}">
+        <input type="submit" value="Hae">
+      </form>
+      <div class="scrollable-list"> 
           <ul>
               {% for tag in tags %}
                   <li>
@@ -54,11 +54,11 @@
           </ul>
       </div>
       <H3>Estetyt aiheet:</H3>
-      <div class="search-list">
-          <form action="/admin" method="GET" style="display: inline-block; margin-top: 20px;">
-              <input type="text" name="blocked_tag_query" value="{{ blocked_tag_query }}">
-              <input type="submit" value="Hae">
-          </form>
+      <form action="/admin" method="GET" style="display: inline-block; margin-top: 20px;">
+        <input type="text" name="blocked_tag_query" value="{{ blocked_tag_query }}">
+        <input type="submit" value="Hae">
+      </form>
+      <div class="scrollable-list">
           <ul>
               {% for tag in blocked_tags %}
                   <li>
