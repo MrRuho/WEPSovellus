@@ -1,6 +1,7 @@
 <a href="/">Palaa</a>
 <hr>
 <form action="/AddNewUser" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <p>Käyttäjä nimi:<br>
     <input type="text" name="username" maxlength="20"></p>
     <p>Etunimi:<br>

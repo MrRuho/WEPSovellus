@@ -29,6 +29,7 @@
       </p>
       {% if change_password %}
         <form action="/change_password" method="POST">
+          <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
           <p>Anna vanha salasana<br>
           <input type="password" name="password" maxlength="20"></p>
           <p>Anna uusi salasana<br>
@@ -54,6 +55,7 @@
       </form>
       <br>
       <form action="/delete_account" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         <p>Anna salasana ja tilisi poistetaan:<br>
         <input type="password" name="password" maxlength="20"></p>
         <input type="submit" value="Poista tili">

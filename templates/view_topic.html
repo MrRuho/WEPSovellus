@@ -34,11 +34,13 @@
         </div>
         {% if topic.sender == session.username or admin %}
             <form id="delete-form" action="/hide_topic/{{ topic.id }}" method="POST" style="display: inline;">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                 <input type="submit" value="Poista" class="custom-button" onclick="return confirm('Haluatko varmasti poistaa viestin?');">
             </form>
         {% endif %}
         {% if topic.sender == session.username %}
             <form id="edit-form" action="/edit_topic/{{ topic.id }}" method="POST" style="display: inline;">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                 <input type="submit" value="Muokkaa" class="custom-button">
             </form>
         {% endif %}
@@ -53,12 +55,14 @@
                         <p>{{ comment.content }}</p>
                         {% if comment.sender == session.username or admin %}
                             <form id="delete-form" action="/delete_comment/{{ comment.id }}" method="POST" style="display: inline;">
+                                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                                 <input type="hidden" name="comment_id" value="{{ comment.id }}">
                                 <input type="submit" value="Poista" class="custom-button" onclick="return confirm('Haluatko varmasti poistaa viestin?');">
                             </form>
                         {% endif %}
                         {% if comment.sender == session.username%}
                             <form id="edit-form" action="/edit_comment/{{ comment.id }}" method="POST" style="display: inline;">
+                                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                                 <input type="hidden" name="comment_id" value="{{ comment.id }}">
                                 <input type="submit" value="Muokkaa" class="custom-button"> 
                             </form>
@@ -79,6 +83,7 @@
                 </div>
             {% else %}
             <form action="/comment" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                 <input type="hidden" name="topic_id" value="{{ topic.id }}">                
                 Kommentoi: <br>
                 <textarea name="comment" rows="3" cols="40"></textarea>

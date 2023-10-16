@@ -21,6 +21,7 @@
     </div>
     <div class="new-topic-container">
         <form action="/publish" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         <div>
             Aihealue: <br>
             <textarea name="tag" rows="1" cols="15" maxlength="20"></textarea>

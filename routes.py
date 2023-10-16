@@ -1,17 +1,24 @@
-from flask import redirect, render_template, request, session
+import secrets
+from flask import abort, redirect, render_template, request, session
 from app import app
 from sqlalchemy.sql import text
 from sql import update_topic_scores,publish_topic,selected_topic,topic_comments,show_topics,latest_topic,new_user,add_comment,hide_topic, update_topic,hide_comment,get_topic_id_from_comment_id,selected_comment,update_comment,add_topic_to_tag_table,add_tag_to_interests,my_interest_list,show_top_subjects,remove_tag_from_interests,show_tags,user_profile,hide_user,user_new_password,role,all_users,add_topic_to_block_list,show_blocked_tags,remove_topic_from_block_list,user_penalty_time,are_user_in_block_list, block_time,remove_expired_blocks,get_blocked_users,give_admin_privileges,remove_admin_privileges,master_admin,db
 from werkzeug.security import check_password_hash, generate_password_hash
 
+def csrf_protect():
+    if session.get("csrf_token") != request.form.get("csrf_token"):
+        abort(403)
+
 @app.route("/")
 def index():
+    session["csrf_token"] = secrets.token_hex(16)
+    print(session)
     return render_template("index.html")
 
 #Login or create new account
 @app.route("/login",methods=["POST"])
 def login():
-
+    csrf_protect()
     username = request.form["username"]
     password = request.form["password"]
 
@@ -54,7 +61,9 @@ def register():
 # Add new user to database
 @app.route("/AddNewUser",methods=["POST"])
 def AddNewUser():
-   
+
+    csrf_protect()
+    
     username = request.form["username"]
     first_name = request.form["first_name"]
     last_name = request.form["last_name"]
@@ -79,6 +88,7 @@ def AddNewUser():
 # Show all topics
 @app.route("/topics", methods=["GET"])
 def topic():
+ 
     username = session["username"]
 
     blocked_user = are_user_in_block_list(username)
@@ -144,6 +154,7 @@ def new_topic():
 # Publish new topic
 @app.route("/publish", methods=["POST"])
 def send():
+    csrf_protect()
     header = request.form["header"]
     content = request.form["content"]
     sender = session["username"]
@@ -173,6 +184,7 @@ def view_topic(topic_id):
 # "Delete" topic. (This only hides it but no one can see it anymore)
 @app.route("/hide_topic/<int:topic_id>", methods=["POST"])
 def delete_topic(topic_id):
+    csrf_protect()
     username = session["username"]
     topic = selected_topic(topic_id)
     admin = role(username)
@@ -184,7 +196,7 @@ def delete_topic(topic_id):
 
 @app.route('/edit_topic/<int:topic_id>', methods=['POST'])
 def edit_topic(topic_id):
-
+    csrf_protect()
     topic = selected_topic(topic_id)
    
     return render_template('edit_topic.html',topic=topic)
@@ -192,7 +204,7 @@ def edit_topic(topic_id):
 
 @app.route('/update_topic', methods=['POST'])
 def modify_topic():
-
+    csrf_protect()
     topic_id = request.form["topic_id"]
     header = request.form["header"]
     content = request.form["content"]
@@ -208,6 +220,7 @@ def modify_topic():
 
 @app.route('/delete_comment/<int:comment_id>', methods=['POST'])
 def delete_comment(comment_id):
+    csrf_protect()
     username = session['username']
     hide_comment(comment_id)
     admin = role(username)
@@ -220,7 +233,7 @@ def delete_comment(comment_id):
 
 @app.route('/edit_comment/<int:comment_id>', methods=['POST'])
 def edit_comment(comment_id):
-
+    csrf_protect()
     comment = selected_comment(comment_id)
 
     return render_template("edit_comment.html", comment=comment)
@@ -228,7 +241,7 @@ def edit_comment(comment_id):
 
 @app.route('/update_comment', methods=['POST'])
 def modify_comment():
-
+    csrf_protect()
     topic_id = request.form["topic_id"]
     comment_id = request.form["comment_id"]
     content = request.form["content"]
@@ -243,6 +256,7 @@ def modify_comment():
 # Add new comment
 @app.route("/comment", methods=["POST"])
 def comment():
+    csrf_protect()
     content = request.form["comment"]
     sender = session["username"]
     topic_id = request.form["topic_id"]
@@ -253,6 +267,7 @@ def comment():
 
 @app.route("/profile",methods=["GET", "POST"])
 def profile():
+    
     username = session['username']
     user = user_profile(username)
     admin = role(username)
@@ -271,7 +286,7 @@ def profile():
 
 @app.route("/change_password",methods=["POST"])
 def change_password():
-
+    csrf_protect()
     username = session['username']
     password = request.form["password"]
     new_password = request.form["new_password"]
@@ -289,6 +304,7 @@ def change_password():
 
 @app.route("/delete_account",methods=["POST"])
 def delete_account():
+    csrf_protect()
     username = session['username']
     password = request.form["password"]
     correct_password = hide_user(username, password)
@@ -300,6 +316,7 @@ def delete_account():
 
 @app.route("/admin", methods=["GET"])
 def admin_tools():
+
     username = session['username']
     admin = role(username)
     block_user = request.args.get("block_user")
@@ -367,9 +384,6 @@ def manage_privileges():
             remove_admin_privileges(user)
 
     return redirect("/admin")
-
-
-
 
 @app.route("/logout")
 def logout():
