@@ -17,27 +17,61 @@
         <a href="/logout">Kirjaudu ulos</a>     
       </div>
       <div>
-        <p>Etsikäyttäjä</p> 
+        <H3>Käyttäjät:</H3>
         <form action="/admin" method="GET" style="display: inline-block; margin-top: 20px;">
           <input type="text" name="query" value="{{ query }}">
           <input type="submit" value="Hae">
-        </form>
-        <H3>Käyttäjät:</H3> 
+        </form> 
       </div>
     </div>
-    <div class="container">
-      <div>
-        {% for user in users %}
-          <p>Käyttäjänimi: {{ user.username }}</p> 
-          <p>Etunimi: {{ user.first_name }}</p>
-          <p>Sukunimi: {{ user.last_name }}</p>
-          <p>Sähköposti: {{ user.email }}</p>
-          <p>Käytössä:{{ user.visible }}</p> 
-          <p>Rooli:{{ user.role }}</p>
-          <br>
-        {% endfor %}
+    <div class="container">  
+        <div>
+          {% for user in users %}
+            {% if user.role != "Master" %}
+              <a href="/admin?block_user={{ user.username }}">Käyttäjän estot</a>
+            {% endif %}  
+            {% if block_user == user.username %}
+              <br>
+              <br>
+              <a>Estä käyttäjä:</a>
+              &nbsp;&nbsp;
+              <a href="/block_user?block_user={{ user.username }}&penalty_time=2">2 min</a>
+              &nbsp;&nbsp;
+              <a href="/block_user?block_user={{ user.username }}&penalty_time=3">3 päivää</a>
+              &nbsp;&nbsp;
+              <a href="/block_user?block_user={{ user.username }}&penalty_time=7">7 päivää</a>
+              &nbsp;&nbsp;
+              <a href="/block_user?block_user={{ user.username }}&penalty_time=30">30 päivää</a>
+              &nbsp;&nbsp;
+              <a href="/block_user?block_user={{ user.username }}&penalty_time=99">Pysyvästi</a>
+              &nbsp;&nbsp;
+              <a href="/block_user?block_user={{ user.username }}&penalty_time=0">Poista esto</a>
+            {% endif %}
+            <p>Käyttäjänimi: {{ user.username }}</p>
+            <p>Etunimi: {{ user.first_name }}</p>
+            <p>Sukunimi: {{ user.last_name }}</p>
+            <p>Sähköposti: {{ user.email }}</p>
+            <p>Käytössä: {{ user.visible }}</p>
+            {% if master %}
+              {% if user.role != "Master" %}
+                <a href="/admin?user_privileges={{ user.username }}">Rooli: {{ user.role }}</a>
+              {% endif %} 
+              {% if user_privileges == user.username %}
+                &nbsp;&nbsp;
+                <a href="/privileges?user={{ user.username }}&new_admin=1">Anna admin oikeudet</a>
+                &nbsp;&nbsp;
+                <a href="/privileges?user={{ user.username }}&remove_admin=1">Poista admin oikeudet</a>
+              {% endif %}
+            {% endif %}
+            {% for blocked_user in blocked_users %}
+                {% if blocked_user.username == user.username %}
+                    <p>Käyttäjän käyttöoikeuksia on rajoitettu vielä {{ blocked_user.penalty_time }}.</p>
+                {% endif %}
+            {% endfor %}
+            <hr>
+            {% endfor %}     
+        </div>
       </div>
-    </div>
     <div class="side-bar">
       <H3>Aiheet:</H3>
       <form action="/admin" method="GET" style="display: inline-block; margin-top: 20px;">

@@ -30,9 +30,15 @@
           </form>
       </div>
       <div>
+        {% if blocked_user %}
+        <p>
+          Et voi aloittaa uutta keskustelua! Käyttöoikeuksiasi on rajattu vielä {{ penalty_time }}. Odotellessa voit kertailla talon sääntöjä. 1. Don't be an a**hole! 2. Obey state laws!
+        </p>
+        {% else %}
         <p>
           <a href="/new_topic" style="margin-top: 20px; font-weight: bold;">Aloita uusi keskustelu</a>
         </p>
+        {% endif %}
       </div>   
     </div>
 

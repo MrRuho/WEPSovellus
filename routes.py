@@ -1,7 +1,7 @@
 from flask import redirect, render_template, request, session
 from app import app
 from sqlalchemy.sql import text
-from sql import update_topic_scores,publish_topic,selected_topic,topic_comments,show_topics,latest_topic,new_user,add_comment,hide_topic, update_topic,hide_comment,get_topic_id_from_comment_id,selected_comment,update_comment,add_topic_to_tag_table,add_tag_to_interests,my_interest_list,show_top_subjects,remove_tag_from_interests,show_tags,user_profile,hide_user,user_new_password,role,all_users,add_topic_to_block_list,show_blocked_tags,remove_topic_from_block_list,db
+from sql import update_topic_scores,publish_topic,selected_topic,topic_comments,show_topics,latest_topic,new_user,add_comment,hide_topic, update_topic,hide_comment,get_topic_id_from_comment_id,selected_comment,update_comment,add_topic_to_tag_table,add_tag_to_interests,my_interest_list,show_top_subjects,remove_tag_from_interests,show_tags,user_profile,hide_user,user_new_password,role,all_users,add_topic_to_block_list,show_blocked_tags,remove_topic_from_block_list,user_penalty_time,are_user_in_block_list, block_time,remove_expired_blocks,get_blocked_users,give_admin_privileges,remove_admin_privileges,master_admin,db
 from werkzeug.security import check_password_hash, generate_password_hash
 
 @app.route("/")
@@ -36,8 +36,13 @@ def login():
             my_interest = my_interest_list(username)
             top_subjects = show_top_subjects()
             tags = show_tags(tag_query)
+            admin = role(username)
+            penalty_time = ""
+            blocked_user = are_user_in_block_list(username)
+            if blocked_user:
+                penalty_time = block_time(username)
            
-            return render_template("/topics.html", topics=topics, latest_topic=latest,show_interests=show_interests,show_interests_text=show_interests_text,my_interest = my_interest, top_subjects = top_subjects, tags= tags)
+            return render_template("/topics.html", topics=topics, latest_topic=latest,show_interests=show_interests,show_interests_text=show_interests_text,my_interest = my_interest, top_subjects = top_subjects, tags= tags,admin=admin,blocked_user=blocked_user,penalty_time=penalty_time)
         else:
             return render_template("index.html", not_password=True)
 
@@ -76,6 +81,12 @@ def AddNewUser():
 def topic():
     username = session["username"]
 
+    blocked_user = are_user_in_block_list(username)
+    penalty_time = ""
+    if blocked_user:
+        penalty_time = block_time(username)
+
+
     query = request.args.get("query")
     if query is None:
         query = ""
@@ -104,7 +115,7 @@ def topic():
     tags = show_tags(tag_query)
     admin = role(username)
 
-    return render_template("topics.html",topics=topics, latest_topic=latest, query=query, show_interests=show_interests, show_interests_text=show_interests_text, toggle_show_interests=toggle_show_interests,my_interest = my_interest, top_subjects = top_subjects, tags= tags, admin=admin)
+    return render_template("topics.html",topics=topics, latest_topic=latest, query=query, show_interests=show_interests, show_interests_text=show_interests_text, toggle_show_interests=toggle_show_interests,my_interest = my_interest, top_subjects = top_subjects, tags= tags, admin=admin,blocked_user=blocked_user, penalty_time=penalty_time)
 
 
 @app.route('/follow_tag/<string:tag>', methods=['GET'])
@@ -138,6 +149,7 @@ def send():
     sender = session["username"]
     tag = request.form["tag"].lower()
 
+
     publish_topic(header, content, sender, tag)
     update_topic_scores()
     add_topic_to_tag_table(tag)
@@ -151,7 +163,12 @@ def view_topic(topic_id):
     topic = selected_topic(topic_id)
     comments = topic_comments(topic_id)
     admin = role(username)
-    return render_template("view_topic.html", topic=topic, comments=comments,admin=admin)
+    blocked_user = are_user_in_block_list(username)
+    penalty_time = ""
+    if blocked_user:
+        penalty_time = block_time(username)
+
+    return render_template("view_topic.html", topic=topic, comments=comments,admin=admin, blocked_user=blocked_user,penalty_time=penalty_time)
 
 # "Delete" topic. (This only hides it but no one can see it anymore)
 @app.route("/hide_topic/<int:topic_id>", methods=["POST"])
@@ -285,6 +302,11 @@ def delete_account():
 def admin_tools():
     username = session['username']
     admin = role(username)
+    block_user = request.args.get("block_user")
+    user_privileges = request.args.get("user_privileges")
+    master = master_admin(username)
+    remove_expired_blocks()
+
     query = request.args.get("query")
     if query is None:
         query = ""
@@ -301,8 +323,9 @@ def admin_tools():
         users = all_users(query)
         tags = show_tags(tag_query)
         blocked_tags = show_blocked_tags(blocked_tag_query)
+        blocked_users = get_blocked_users()
 
-    return render_template("admin.html", admin=admin, users=users, tags=tags, blocked_tags=blocked_tags)
+    return render_template("admin.html", admin=admin, users=users, tags=tags, blocked_tags=blocked_tags,block_user=block_user, blocked_users=blocked_users, user_privileges = user_privileges, master=master )
 
 @app.route('/block_tag/<string:tag>', methods=['GET'])
 def block_tag(tag):
@@ -317,6 +340,35 @@ def release_tag(tag):
     remove_topic_from_block_list(tag)
 
     return redirect("/admin")
+
+
+@app.route('/block_user', methods=['GET'])
+def block_user():
+
+    penalty_time = request.args.get("penalty_time")
+    username = request.args.get("block_user")
+    user_penalty_time(penalty_time,username)
+    
+    return redirect("/admin")
+
+@app.route('/privileges', methods=['GET'])
+def manage_privileges():
+    username = session['username']
+    user = request.args.get('user')
+    new_admin = request.args.get('new_admin')
+    remove_admin = request.args.get('remove_admin')
+
+    master = master_admin(username)
+    
+    if user and master:
+        if new_admin:
+            give_admin_privileges(user)
+        elif remove_admin:
+            remove_admin_privileges(user)
+
+    return redirect("/admin")
+
+
 
 
 @app.route("/logout")

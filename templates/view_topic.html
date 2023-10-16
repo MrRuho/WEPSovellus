@@ -69,6 +69,15 @@
         {% endfor %}
 
         <div class="comment-box">
+            {% if blocked_user %}
+                <p>
+                Et voi kommentoida! Käyttöoikeuksiasi on rajattu vielä {{ penalty_time }}. Odotellessa voit kertailla talon sääntöjä. 1. Don't be an a**hole! 2. Obey state laws!
+                </p>
+                <br>
+                <div class="back-link">
+                    <a href="/topics">Palaa</a>
+                </div>
+            {% else %}
             <form action="/comment" method="POST">
                 <input type="hidden" name="topic_id" value="{{ topic.id }}">                
                 Kommentoi: <br>
@@ -80,6 +89,8 @@
             <div class="back-link">
                 <a href="/topics">Palaa</a>
             </div>
-        </div>     
+            {% endif %} 
+        </div>
+            
     </body>
 </html>

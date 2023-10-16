@@ -1,8 +1,11 @@
 from sqlalchemy.sql import text
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
+import pytz
 from datetime import datetime, timedelta
 db = SQLAlchemy()
+
+timezone = pytz.timezone('Europe/Helsinki')
 
 # Display the most popular topic at first, based on the highest number of points. 
 # if query not empty, searches for similarity in the header, sender, and tag.
@@ -372,14 +375,157 @@ def all_users(query):
 
 
 def add_topic_to_block_list(tag):
-    duration = timedelta(days=365 * 9999)
+    helsinki = timezone
+    duration = timedelta(days=365 * 100)
 
     sql = text("INSERT INTO block_list (name, category, blocked_at, duration) VALUES (:tag, 'subject', :timestamp, :duration)")
-    db.session.execute(sql, {"tag": tag, "subject": tag, "timestamp": datetime.utcnow(), "duration": duration})
+    db.session.execute(sql, {"tag": tag, "subject": tag, "timestamp": datetime.now(helsinki), "duration": duration})
     db.session.commit()
+
 
 def remove_topic_from_block_list(tag):
     sql = text("DELETE FROM block_list WHERE name = :name AND category = 'subject'")
     db.session.execute(sql, {"name": tag})
     db.session.commit()
 
+
+def user_penalty_time(penalty_time,username):
+    helsinki = timezone
+    penalty_time = int(penalty_time)
+
+    if penalty_time == 2:
+        duration = timedelta(minutes=2)
+    elif penalty_time == 99:
+        duration = timedelta(days=365 * 100)
+    else:    
+        duration = timedelta(days=penalty_time)
+
+    sql_check = text("SELECT 1 FROM block_list WHERE name = :username AND category = 'user'")
+    result = db.session.execute(sql_check, {"username": username})
+    exists = result.scalar()
+
+    if exists:
+        if penalty_time == 0:
+            sql = text("DELETE FROM block_list WHERE name = :username AND category = 'user'")
+            db.session.execute(sql, {"username": username})
+            db.session.commit()
+    else:
+        if penalty_time > 0:
+            sql = text("INSERT INTO block_list (name, category, blocked_at, duration) VALUES (:username, 'user', :timestamp, :duration)")
+            db.session.execute(sql, {"username": username, "timestamp": datetime.now(helsinki), "duration": duration})
+            db.session.commit()
+
+
+def are_user_in_block_list(username):
+    helsinki = timezone
+    current_time = datetime.now(helsinki)
+
+    sql_check = text("SELECT blocked_at, duration FROM block_list WHERE name = :username AND category = 'user'")
+    result = db.session.execute(sql_check, {"username": username})
+    row = result.fetchone()
+
+    if row:
+        blocked_at = row.blocked_at.astimezone(helsinki)
+        duration = row.duration
+
+        end_time = blocked_at + duration
+
+        if end_time <= current_time:
+            sql_remove = text("DELETE FROM block_list WHERE name = :username AND category = 'user'")
+            db.session.execute(sql_remove, {"username": username})
+            db.session.commit()
+            return False
+        else:
+            return True
+
+    return False
+
+
+def remove_expired_blocks():
+    helsinki = timezone
+    current_time = datetime.now(helsinki)
+
+    sql = text("SELECT name, blocked_at, duration FROM block_list WHERE category = 'user'")
+    result = db.session.execute(sql)
+    blocked_users = result.fetchall()
+
+    for user in blocked_users:
+        blocked_at = user.blocked_at.astimezone(helsinki)
+        duration = user.duration
+        username = user.name
+        end_time = blocked_at + duration
+
+        if end_time <= current_time:
+
+            sql_remove = text("DELETE FROM block_list WHERE name = :username AND category = 'user'")
+            db.session.execute(sql_remove, {"username": username})
+            db.session.commit()
+
+
+
+def get_blocked_users():
+    helsinki = timezone
+    current_time = datetime.now(helsinki)
+
+    sql = text("SELECT name AS username, blocked_at, duration FROM block_list WHERE category = 'user'")
+    result = db.session.execute(sql)
+    blocked_users = result.fetchall()
+
+    users_with_time_remaining = []
+
+    for user in blocked_users:
+        username = user.username
+        blocked_at = user.blocked_at.astimezone(helsinki)
+        duration = user.duration
+        end_time = blocked_at + duration
+
+        if end_time > current_time:
+            time_remaining = block_time(username)
+        
+        users_with_time_remaining.append({
+            "username": username,
+            "penalty_time": time_remaining
+        })
+
+    return users_with_time_remaining
+
+def block_time(username):
+    helsinki = timezone
+    current_time = datetime.now(helsinki)
+
+    sql_check = text("SELECT blocked_at, duration FROM block_list WHERE name = :username AND category = 'user'")
+    result = db.session.execute(sql_check, {"username": username})
+    row = result.fetchone()
+
+    blocked_at = row.blocked_at.astimezone(helsinki)
+    duration = row.duration
+    end_time = blocked_at + duration
+
+    remaining_time = end_time - current_time
+
+    days = remaining_time.days
+    seconds = remaining_time.seconds
+    hours, seconds = divmod(seconds, 3600)
+    minutes, seconds = divmod(seconds, 60)
+
+    return f"{days} päivää {hours} tuntia {minutes} minuuttia {seconds} sekunttia"
+
+def give_admin_privileges(user):
+    sql = text("UPDATE users SET role = 'Admin' WHERE username = :user")
+    db.session.execute(sql, {"user": user})
+    db.session.commit()
+
+def remove_admin_privileges(user):
+    sql = text("UPDATE users SET role = 'User' WHERE username=:user")
+    db.session.execute(sql, {"user": user})
+    db.session.commit()
+
+def master_admin(username):
+    sql = text("SELECT role FROM users WHERE username=:username")
+    result = db.session.execute(sql, {"username": username})
+    role = result.fetchone()
+    if role and (role[0] == "Master"):
+        return True
+    else:
+        return False
+    
