@@ -33,3 +33,11 @@ CREATE TABLE tags (
     subject TEXT,
     total TEXT  
 );
+
+CREATE TABLE block_list (
+    id SERIAL PRIMARY KEY,
+    name TEXT,
+    category TEXT,
+    blocked_at TIMESTAMPTZ,
+    duration INTERVAL
+);
