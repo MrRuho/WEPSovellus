@@ -6,6 +6,10 @@
 
 }
 
+.topics {
+    margin-top: 450px;
+}
+
 .side-bar {
     position: fixed;
     top: 330px;
