@@ -1,9 +1,26 @@
-<form action="/update_comment" method="POST">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <input type="hidden" name="topic_id" value="{{ comment.topic_id }}">
-    <input type="hidden" name="comment_id" value="{{ comment.id }}">
-    Kommentoi: <br>
-    <textarea name="content" rows="3" cols="40">{{ comment.content }}</textarea>
-    <br>
-    <input type="submit" value="Muokkaa">
-</form>
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='topbar_styles.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='font_styles.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='edit_text_styles.css') }}">
+    </head>
+
+    <body>
+        <div class="text_container">
+            <form action="/update_comment" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                <input type="hidden" name="topic_id" value="{{ comment.topic_id }}">
+                <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                Kommentoi: <br>
+                <textarea name="content" rows="3" cols="60">{{ comment.content }}</textarea>
+                <br>
+                <input type="submit" value="Muokkaa">
+            </form>
+            <br>
+            <div>
+                <a href="/topics">Palaa</a>
+            </div>
+        </div>
+    </body>
+</html>

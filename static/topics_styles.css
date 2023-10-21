@@ -1,0 +1,39 @@
+.container {
+    display: flex;
+    max-width: 100%;
+    margin: 0;
+    margin-top: 330px;
+}
+
+.text-element,.topics-element {
+    flex: 1;
+    margin-left: 20px;
+    margin-top: 0;
+    margin-bottom: 0;
+
+}
+
+.side-bar {
+    position: fixed;
+    top: 330px;
+    right: 20px;
+    background-color: #ffffff00;
+    border-radius: 15px;
+    padding: 10px;
+    word-wrap: break-word;
+    z-index: 99;
+    max-width: 300px;
+    width: 100%;
+}
+
+.scrollable-list {
+    background-color: #9ff0be;
+    border-radius: 15px;
+    padding: 10px;
+    margin-bottom: 10px;
+    word-wrap: break-word;
+    max-width: 300px;
+    width: 100%;
+    overflow-y: auto;
+    max-height: 200px;
+}

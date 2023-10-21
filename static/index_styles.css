@@ -1,0 +1,31 @@
+.login_container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 100%;
+    margin: 0;
+    margin-top: 80px;
+}
+
+.login_container form {
+    text-align: left;
+}
+
+.new_user {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 100%;
+    margin: 0;
+    margin-right: 85px;
+}
+
+.notice_container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 100%;
+    margin: 0;
+    margin-top: 10px;
+    font-family: 'Roboto', sans-serif;
+}

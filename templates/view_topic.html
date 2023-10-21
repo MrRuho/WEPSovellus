@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
     <head>    
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='topbar_styles.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='view_topic_styles.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='font_styles.css') }}">
     </head>
 
     <body>
@@ -15,7 +17,7 @@
               {% if admin %}<a href="/admin">Admin työkalut</a>{% endif %}
               <a href="/logout">Kirjaudu ulos</a>
             </div>
-            <div style="text-align: center;">
+            <div class="forum-title">
                 <h1>FORUM</h1>
                 <p>Puhe on vapaa</p>
             </div>
@@ -25,7 +27,7 @@
         </div>
         <div class="topic_container">
             <div class="topic-header">
-                <h1>{{ topic.header }}</h1>
+                <h2>{{ topic.header }}</h2>
             </div>
             <div class="topic-content">
                 <p1>{{ topic.content }}</p1>

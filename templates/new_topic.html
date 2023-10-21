@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='topbar_styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='new_topic_styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='font_styles.css') }}">
   </head>
 
   <body>
@@ -14,7 +16,7 @@
           <a href="/profile">Oma profiili</a>
           <a href="/logout">Kirjaudu ulos</a>
         </div>
-        <div style="text-align: center;">
+        <div class="forum-title">
             <h1>FORUM</h1>
             <p>Puhe on vapaa</p>
         </div>  
@@ -24,17 +26,17 @@
         <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         <div>
             Aihealue: <br>
-            <textarea name="tag" rows="1" cols="15" maxlength="20"></textarea>
+            <textarea name="tag" rows="1" cols="15" maxlength="20"class="input-field"></textarea>
         </div>
         <br>
         <div>
             Otsikko: <br>
-            <textarea name="header" rows="1" cols="40"maxlength="40"></textarea>
+            <textarea name="header" rows="1" cols="40"maxlength="40"class="input-field"></textarea>
         </div>
         <br>
         <div>
             Viesti: <br>
-            <textarea name="content" rows="10" cols="80"maxlength="5000"></textarea>
+            <textarea name="content" rows="10" cols="80"maxlength="5000"class="input-field"></textarea>
         </div>
         <br>
         <div>

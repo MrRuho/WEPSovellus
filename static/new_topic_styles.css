@@ -1,0 +1,20 @@
+.new-topic-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 60%;
+    margin: 0 auto;
+    margin-top: 250px;
+    align-items: center;
+    justify-content: center;
+    background-color: #c4f5d6;
+    border-radius: 15px;
+    padding: 10px;
+    margin-bottom: 10px;
+    word-wrap: break-word;
+}
+
+.new-topic-container textarea {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}

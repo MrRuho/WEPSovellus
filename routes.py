@@ -12,7 +12,6 @@ def csrf_protect():
 @app.route("/")
 def index():
     session["csrf_token"] = secrets.token_hex(16)
-    print(session)
     return render_template("index.html")
 
 #Login or create new account
@@ -26,32 +25,35 @@ def login():
     sql = text("SELECT id, password, visible FROM users WHERE username=:username")
     result = db.session.execute(sql, {"username":username})
     user = result.fetchone()
+    
+    if not user:
+        return render_template("index.html", not_user=True)
+
     if user.visible == False:
         return render_template("index.html", deleted_user=True)
-    elif not user:
-        return render_template("index.html", not_user=True)
-    else:
-        hash_value = user.password
-        if check_password_hash(hash_value, password):
-            session["username"] = username
-            query = ""
-            tag_query = ""
-            show_interests = "false"
-            show_interests_text = "Näytä seurattavat"
-            topics = show_topics(query,show_interests,username)
-            latest = latest_topic(username,show_interests)
-            my_interest = my_interest_list(username)
-            top_subjects = show_top_subjects()
-            tags = show_tags(tag_query)
-            admin = role(username)
-            penalty_time = ""
-            blocked_user = are_user_in_block_list(username)
-            if blocked_user:
-                penalty_time = block_time(username)
+
+    hash_value = user.password
+    
+    if check_password_hash(hash_value, password):
+        session["username"] = username
+        query = ""
+        tag_query = ""
+        show_interests = "false"
+        show_interests_text = "Näytä seurattavat"
+        topics = show_topics(query,show_interests,username)
+        latest = latest_topic(username,show_interests)
+        my_interest = my_interest_list(username)
+        top_subjects = show_top_subjects()
+        tags = show_tags(tag_query)
+        admin = role(username)
+        penalty_time = ""
+        blocked_user = are_user_in_block_list(username)
+        if blocked_user:
+            penalty_time = block_time(username)
            
-            return render_template("/topics.html", topics=topics, latest_topic=latest,show_interests=show_interests,show_interests_text=show_interests_text,my_interest = my_interest, top_subjects = top_subjects, tags= tags,admin=admin,blocked_user=blocked_user,penalty_time=penalty_time)
-        else:
-            return render_template("index.html", not_password=True)
+        return render_template("/topics.html", topics=topics, latest_topic=latest,show_interests=show_interests,show_interests_text=show_interests_text,my_interest = my_interest, top_subjects = top_subjects, tags= tags,admin=admin,blocked_user=blocked_user,penalty_time=penalty_time)
+    else:
+        return render_template("index.html", not_password=True)
 
 # New user register template
 @app.route("/register")

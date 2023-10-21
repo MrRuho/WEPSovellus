@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-  
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='topbar_styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='font_styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='admin_styles.css') }}">
   </head>
 
   <body>
@@ -27,14 +28,10 @@
     </div>
     <div class="container">  
         <div>
-          {% for user in users %}
-            {% if user.role != "Master" %}
-              <a href="/admin?block_user={{ user.username }}">Käyttäjän estot</a>
-            {% endif %}  
-            {% if block_user == user.username %}
+          {% for user in users %}      
               <br>
               <br>
-              <a>Estä käyttäjä:</a>
+              <a>&nbsp;&nbsp;Estä käyttäjä:</a>
               &nbsp;&nbsp;
               <a href="/block_user?block_user={{ user.username }}&penalty_time=2">2 min</a>
               &nbsp;&nbsp;
@@ -47,17 +44,14 @@
               <a href="/block_user?block_user={{ user.username }}&penalty_time=99">Pysyvästi</a>
               &nbsp;&nbsp;
               <a href="/block_user?block_user={{ user.username }}&penalty_time=0">Poista esto</a>
-            {% endif %}
-            <p>Käyttäjänimi: {{ user.username }}</p>
-            <p>Etunimi: {{ user.first_name }}</p>
-            <p>Sukunimi: {{ user.last_name }}</p>
-            <p>Sähköposti: {{ user.email }}</p>
-            <p>Käytössä: {{ user.visible }}</p>
+        
+            <p>&nbsp;&nbsp;Käyttäjänimi: {{ user.username }}</p>
+            <p>&nbsp;&nbsp;Etunimi: {{ user.first_name }}</p>
+            <p>&nbsp;&nbsp;Sukunimi: {{ user.last_name }}</p>
+            <p>&nbsp;&nbsp;Sähköposti: {{ user.email }}</p>
+            <p>&nbsp;&nbsp;Käytössä: {{ user.visible }}</p>
             {% if master %}
               {% if user.role != "Master" %}
-                <a href="/admin?user_privileges={{ user.username }}">Rooli: {{ user.role }}</a>
-              {% endif %} 
-              {% if user_privileges == user.username %}
                 &nbsp;&nbsp;
                 <a href="/privileges?user={{ user.username }}&new_admin=1">Anna admin oikeudet</a>
                 &nbsp;&nbsp;
@@ -70,12 +64,13 @@
                 {% endif %}
             {% endfor %}
             <hr>
-            {% endfor %}     
+          {% endfor %}     
         </div>
       </div>
     <div class="side-bar">
+      <p class ="p_own">Aiheuden hallinta: Voit estää/vapauttaa aiheen näkyvyyden klikkaamalla aihetta.</p>
       <H3>Aiheet:</H3>
-      <form action="/admin" method="GET" style="display: inline-block; margin-top: 20px;">
+      <form action="/admin" method="GET" style="display: inline-block; margin-top: 0px;">
         <input type="text" name="tag_query" value="{{ tag_query }}">
         <input type="submit" value="Hae">
       </form>
@@ -88,8 +83,9 @@
               {% endfor %}
           </ul>
       </div>
+      <br>
       <H3>Estetyt aiheet:</H3>
-      <form action="/admin" method="GET" style="display: inline-block; margin-top: 20px;">
+      <form action="/admin" method="GET" style="display: inline-block; margin-top: 0px;">
         <input type="text" name="blocked_tag_query" value="{{ blocked_tag_query }}">
         <input type="submit" value="Hae">
       </form>

@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-  
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='topbar_styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='font_styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='profile_styles.css') }}">
   </head>
 
   <body>
@@ -18,7 +19,7 @@
       </div>
     </div>
 
-    <div class="topic_container">
+    <div class="profile-container">
       <h3>Käyttäjätiedot</h3>
       <p>Käyttäjänimi: {{ user.username }}</p>
       <p>Etunimi: {{ user.first_name }}</p>
@@ -48,6 +49,7 @@
       </p>
     </div>
     {% if confirm_delete %}
+    <div class="remove-container">
     <p> HUOM! POISTETTUA TILIÄ EI VOI SAADA TAKAISIN</p>
       <form action="/profile?confirm_delete=0" method="POST">
         <input type="hidden" name="cancel" value="true">
@@ -60,6 +62,7 @@
         <input type="password" name="password" maxlength="20"></p>
         <input type="submit" value="Poista tili">
       </form>
+    </div>
     {% endif %}
     {% if wrong_password %}
     <p>Väärä salasana</p>

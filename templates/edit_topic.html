@@ -1,14 +1,31 @@
-<form action="/update_topic" method="POST">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <input type="hidden" name="topic_id" value="{{ topic.id }}">
-    Aihealue: <br>
-    <textarea name="tag" rows="1" cols="10">{{ topic.tag }}</textarea>
-    <br>
-    Otsikko: <br>
-    <textarea name="header" rows="1" cols="20">{{ topic.header }}</textarea>
-    <br>
-    Viesti: <br>
-    <textarea name="content" rows="3" cols="40">{{ topic.content }}</textarea>
-    <br>
-    <input type="submit" value="Päivitä">
-</form>
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='topbar_styles.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='font_styles.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='new_topic_styles.css') }}">
+    </head>
+
+    <body>
+        <div class="new-topic-container">
+            <form action="/update_topic" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                <input type="hidden" name="topic_id" value="{{ topic.id }}">
+                Aihealue: <br>
+                <textarea name="tag" rows="1" cols="15" maxlength="20"class="input-field">{{ topic.tag }}</textarea>
+                <br>
+                Otsikko: <br>
+                <textarea name="header" rows="1" cols="40"maxlength="40"class="input-field">{{ topic.header }}</textarea>
+                <br>
+                Viesti: <br>
+                <textarea name="content" rows="10" cols="80"maxlength="5000"class="input-field">{{ topic.content }}</textarea>
+                <br>
+                <input type="submit" value="Päivitä">
+            </form>
+            <br>
+            <div>
+                <a href="/topics">Palaa</a>
+            </div>
+        </div>
+    </body>
+</html>

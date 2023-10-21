@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='topbar_styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='topics_styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='font_styles.css') }}">
   
   </head>
 
@@ -16,7 +18,7 @@
         {% if admin %}<a href="/admin">Admin työkalut</a>{% endif %}
         <a href="/logout">Kirjaudu ulos</a>
       </div>
-      <div style="text-align: center;">
+      <div class="forum-title">
           <h1>FORUM</h1>
           <p>Puhe on vapaa</p>
       </div>
@@ -47,7 +49,7 @@
         {% if query == "" %}
           {% if latest_topic and latest_topic.visible%}
               <h4><a href="/follow_tag/{{ latest_topic.tag }}">{{ latest_topic.tag }}</a></h4>
-              <h1>{{ latest_topic.header }}</h1>
+              <h2>{{ latest_topic.header }}</h2>
               <p>{{ latest_topic.sender }}</p>
               <p>Kommentit:{{ latest_topic.message_count }}</p>
               <a href="/view_topic/{{ latest_topic.id }}" class="btn btn-primary">Lue</a>
@@ -57,9 +59,9 @@
         {% for topic in topics %}
           {% if topic.id != latest_topic.id and topic.visible%}
             <h4><a href="/follow_tag/{{ topic.tag }}?from=topics">{{ topic.tag }}</a></h4>
-            <h1>{{ topic.header }}</h1>
+            <h2>{{ topic.header }}</h2>
             <p>{{ topic.sender }}</p>
-            <p>Kommentit:{{ topic.message_count }}</p>
+            <p class ="p_own">Kommentit:{{ topic.message_count }}</p>
             <a href="/view_topic/{{ topic.id }}" class="btn btn-primary">Lue</a>
             <hr>
           {% endif %}
@@ -67,6 +69,7 @@
       </div>
       
       <div class="side-bar">
+        <p class ="p_own">Aiheuden seuranta: Voit seurata tai lopettaa seuraamisen klikkaamalla aihetta.</p>
           <div class="scrollable-list">
               <h2>Seuratut aiheet:</h2>
               <ul>
