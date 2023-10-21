@@ -6,7 +6,8 @@ CREATE TABLE users (
     email TEXT,
     password TEXT,
     interests INT[],
-    visible Boolean
+    visible Boolean,
+    role TEXT
 );
 
 
