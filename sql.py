@@ -211,9 +211,16 @@ def new_user(username, first_name,last_name, email, hash_value):
 
     if userExists > 0:
         return False
+    
+    #Create a master admin with full rights. There can be only one master admin, so this is created only once.
+    if username == "Admin":
+        sql = text("INSERT INTO users (username, first_name, last_name, email, password, visible, role) VALUES (:username, :first_name, :last_name, :email, :password, true, 'Master')")
+        db.session.execute(sql, {"username": username, "first_name": first_name, "last_name": last_name, "email": email, "password": hash_value})
+        db.session.commit()
+        return
     else:
-        sql = text("INSERT INTO users (username, first_name, last_name, email, password, visible) VALUES (:username, :first_name, :last_name, :email, :password, true)")
-        db.session.execute(sql, {"username":username, "first_name":first_name, "last_name":last_name, "email":email, "password":hash_value})
+        sql = text("INSERT INTO users (username, first_name, last_name, email, password, visible, role) VALUES (:username, :first_name, :last_name, :email, :password, true, 'User')")
+        db.session.execute(sql, {"username": username, "first_name": first_name, "last_name": last_name, "email": email, "password": hash_value})
         db.session.commit()
         return
     
@@ -240,7 +247,7 @@ def update_topic(topic_id,header,content,tag):
     db.session.execute(sql, {"header": header, "content": content, "tag": tag, "topic_id": topic_id})
     db.session.commit()
 
-# Set comment visible to fals
+# Set comment visible to false
 def hide_comment(comment_id): 
     sql = text("UPDATE messages SET visible = false WHERE id = :comment_id")
     db.session.execute(sql, {"comment_id": comment_id})
