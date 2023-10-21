@@ -22,26 +22,66 @@
           <h1>FORUM</h1>
           <p>Puhe on vapaa</p>
       </div>
-      <div>
-        <a href="/topics?show_interests={{ toggle_show_interests }}">{{ show_interests_text }}</a>
-      </div>
-      <div class="navbar-buttons">
-          <form action="/topics" method="GET" style="display: inline-block; margin-top: 20px;">
-              <input type="text" name="query" value="{{ query }}">
+      
+      <div class="container">
+        <div>
+          <div>
+            <a href="/topics?show_interests={{ toggle_show_interests }}">{{ show_interests_text }}</a>
+          </div>
+          <div class="navbar-buttons">
+              <form action="/topics" method="GET" style="display: inline-block; margin-top: 20px;">
+                  <input type="text" name="query" value="{{ query }}">
+                  <input type="submit" value="Hae">
+              </form>
+          </div>
+          <div>
+            {% if blocked_user %}
+            <p>
+              Et voi aloittaa uutta keskustelua! Käyttöoikeuksiasi on rajattu vielä {{ penalty_time }}. Odotellessa voit kertailla talon sääntöjä. 1. Don't be an a**hole! 2. Obey state laws!
+            </p>
+            {% else %}
+            <p>
+              <a href="/new_topic" style="margin-top: 20px; font-weight: bold;">Aloita uusi keskustelu</a>
+            </p>
+            {% endif %}
+          </div>
+        </div>
+        <div class="scrollable-list">
+          <h2>Seuratut aiheet:</h2>
+          <ul>
+          {% for tag in my_interest %}
+              <li>
+                  <a href="/remove_tag/{{ tag }}">{{ tag }}</a>
+              </li>
+          {% endfor %}
+          </ul>
+        </div>
+        <div class="scrollable-list">
+          <h2>Aiheet top 5:</h2>
+          <ul>
+              {% for tag in top_subjects %}
+                  <li>
+                      <a href="/follow_tag/{{ tag }}?from=interests">{{ tag }}</a>
+                  </li>
+              {% endfor %}
+          </ul>
+        </div> 
+        <div>
+          <div class="scrollable-list">
+            <form action="/topics" method="GET" style="display: inline-block; margin-top: 20px;">
+              <input type="text" name="tag_query" value="{{ tag_query }}">
               <input type="submit" value="Hae">
-          </form>
-      </div>
-      <div>
-        {% if blocked_user %}
-        <p>
-          Et voi aloittaa uutta keskustelua! Käyttöoikeuksiasi on rajattu vielä {{ penalty_time }}. Odotellessa voit kertailla talon sääntöjä. 1. Don't be an a**hole! 2. Obey state laws!
-        </p>
-        {% else %}
-        <p>
-          <a href="/new_topic" style="margin-top: 20px; font-weight: bold;">Aloita uusi keskustelu</a>
-        </p>
-        {% endif %}
-      </div>   
+            </form>
+              <ul>
+                  {% for tag in tags %}
+                      <li>
+                          <a href="/follow_tag/{{ tag }}?from=interests">{{ tag }}</a>
+                      </li>
+                  {% endfor %}
+              </ul>
+          </div>   
+        </div>
+      </div>  
     </div>
 
     <div class="container">
@@ -66,43 +106,6 @@
             <hr>
           {% endif %}
         {% endfor %}
-      </div>
-      
-      <div class="side-bar">
-        <p class ="p_own">Aiheuden seuranta: Voit seurata tai lopettaa seuraamisen klikkaamalla aihetta.</p>
-          <div class="scrollable-list">
-              <h2>Seuratut aiheet:</h2>
-              <ul>
-              {% for tag in my_interest %}
-                  <li>
-                      <a href="/remove_tag/{{ tag }}">{{ tag }}</a>
-                  </li>
-              {% endfor %}
-              </ul>
-          </div>
-          <div class="scrollable-list">
-              <h2>Aiheet top 5:</h2>
-              <ul>
-                  {% for tag in top_subjects %}
-                      <li>
-                          <a href="/follow_tag/{{ tag }}?from=interests">{{ tag }}</a>
-                      </li>
-                  {% endfor %}
-              </ul>
-          </div>
-          <form action="/topics" method="GET" style="display: inline-block; margin-top: 20px;">
-            <input type="text" name="tag_query" value="{{ tag_query }}">
-            <input type="submit" value="Hae">
-          </form>
-          <div class="scrollable-list">
-              <ul>
-                  {% for tag in tags %}
-                      <li>
-                          <a href="/follow_tag/{{ tag }}?from=interests">{{ tag }}</a>
-                      </li>
-                  {% endfor %}
-              </ul>
-          </div>
       </div>
     </div>
   </body>

@@ -1,10 +1,13 @@
-.container {
+.container_users {
     display: flex;
     background-color: #e0f1fa;
-    max-width: 60%;
+    max-width: 100%;
     margin: 0;
-    margin-top: 220px;
     border-radius: 15px;
+    word-wrap: break-word;
+    width: 100%;
+    overflow-y: auto;
+    max-height: 400px;
 }
 
 .side-bar {
@@ -31,3 +34,14 @@
     overflow-y: auto;
     max-height: 200px;
 }
+
+.container {
+    display: flex;
+    justify-content: space-between;
+  }
+
+.inner_container {
+    display: flex;
+    justify-content: space-between;
+    gap: 50px;
+  }
