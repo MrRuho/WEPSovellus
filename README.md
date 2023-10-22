@@ -2,6 +2,7 @@
 Tietokannat ja web ohjelmointi kurssi: Harjoitustyö
 
 - HUOM! itse sovellus löytyy master puusta.
+- Sovellusta ei ole Fly.io:sta. Testattavissa vain paikallisesti.
 
 Keskustelusovellus.
 
@@ -66,7 +67,7 @@ Jos testaat sovellusta Ubuntu on windows tai windows alijärjestelmä linuxille 
   - (venv) $ pip install pytz
   - $ pip install -r ./requirements.txt (HUOM! joidenkin kohdalla asennus ei välttämättä onnistu mutta ohjelma toimii siitä huolimatta. Sovellus on tehty windosin alijärjestelmä linuxsilla )
 
-4. Käynnistä tietokanta (jos ei jo ole) ja Luo sovelluksen tarvitsemat tieokantarakenteet.
+4. Käynnistä tietokanta (jos ei jo ole) ja Luo sovelluksen tarvitsemat tietokantarakenteet.
   - $ start-pg.sh 
   - $ psql < schema.sql
 
@@ -76,6 +77,6 @@ HUOM! jos koneeltasi löytyy jo ennestään tämän sovelluksen käyttämiä tie
    - $ flask run
      
 TESTAUKSESTA ja MUITA HUOMIOITA
-1. LUO käyttäjä nimeltä Admin. Tämä saa master admin oikeudet. Vain tällä käyttäjällä on nämä oikeudet. Muut luodut käyttäjät saavat User oikeudet. Admin(Master) käyttäjällä on näkyvissä admin työkalut linkki. Siellä Master voi antaa muille käyttäjille admin oikeudet tai poistaa ne. Estää käyttäjiä tai aiheita. Muilla admin käyttäjillä on samat oikeudet kuin master mutta tavallinen admin ei voi poistaa tai antaa admin oikeuksia.
+1. LUO käyttäjä jonka käyttäjätunnus on Admin. Tämä saa master admin oikeudet. Vain tällä käyttäjällä on nämä oikeudet. Muut luodut käyttäjät saavat jatkossa User oikeudet. Admin(Master) käyttäjällä on näkyvissä admin työkalut linkki. Siellä Master voi antaa muille käyttäjille admin oikeudet tai poistaa ne. Estää käyttäjiä tai aiheita. Muilla admin käyttäjillä on samat oikeudet kuin master mutta tavallinen admin ei voi poistaa tai antaa admin oikeuksia. Admin voi poistaa minkä tahansa keskustelun ja kommentin.
 2.  Kun luot tunnuksen ja kirjaudut sisään, niin aiheet näkyvät luonti järjestyksessä eli tuoreuden ja kommentoinnin mukaan kuitenkin niin, että uusin on aina ensin. Uusimmat viestit eivät tarvitse niin paljoa kommentteja kuin vanhemmat viesti noustakseen kärkeen. Pisteytys toimii niin, että uusin viesti saa 100 seuraavat 98,94,88,80 jne eli seuraava menettää aina 2 pistettä edellistä enemmän. Jokainen kommentti taas antaa 10 pistettä.
-3.  Voit seurata aiheita klikkaamalla oikella puolelle olevia aihealueita joita tulee sen mukaan kun niitä luodaan. Tällöin ne ilmestyvät seurattaviin. Vastaavasti voit poistaa niitä seurattavista klikkaamalla seurattavista aiheita. Joudut luomaan muutaman aiheen jotta sinne ilmestyy jotakin.
+3. Voit seurata aiheita klikkaamalla aihealueita (joita tulee sen mukaan kun niitä luodaan.) Tällöin ne ilmestyvät seurattaviin. Vastaavasti voit poistaa niitä seurattavista klikkaamalla seurattavista aiheita. Joudut luomaan muutaman aiheen jotta sinne ilmestyy jotakin.
